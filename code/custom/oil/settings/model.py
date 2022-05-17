@@ -7,14 +7,15 @@ class Timm(nn.Module):
         super().__init__()
         self.model = timm.create_model('efficientnet_b4', pretrained=True, num_classes=class_n)
         # self.dropout = nn.Dropout(0.6)
+        
     def forward(self, x):
         x = self.model(x)
         return x
     
-def get_model(args):
-    if args.model == 'timm':
+def getModel(modeltype, device):
+    if model == 'timm':
         model=Timm(args)
     
-    model.to(args.device)
+    model.to(device)
     
     return model

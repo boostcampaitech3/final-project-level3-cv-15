@@ -1,6 +1,6 @@
 from torch.optim.lr_scheduler import StepLR
 
-def get_scheduler(optimizer, args):
+def getScheduler(optimizer):
     if args.scheduler == 'steplr':
         StepLR(optimizer, 20, gamma=0.5)
         
