@@ -8,6 +8,12 @@ from dataset.base_dataset import CustomDataset
 from utils.train_method import train
 from utils.set_seed import setSeed
 
+def getArgument():
+    # Custom 폴더 내 훈련 설정 목록을 선택
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dir',type=str ,required=True)
+    return parser.parse_known_args()[0].dir
+
 def train(args, model, train_loader, optimizer):
     criterion = nn.CrossEntropyLoss()
     
@@ -95,26 +101,26 @@ def main(custom_dir):
     #         WandBMethod.login(arg, model, criterion)
 
     # train(arg.epoch, model, trainLoader, valLoader, criterion, optimizer,scheduler, outputPath, arg.save_capacity, device, arg.wandb)
-    best_acc = -1
+#     best_acc = -1
     
-    iter_n = 1
+#     iter_n = 1
     
-    for epoch in notebook.tqdm(range(args.n_epochs)):
-        print(f'Epoch {epoch+1}/{args.n_epochs}')
+#     for epoch in notebook.tqdm(range(args.n_epochs)):
+#         print(f'Epoch {epoch+1}/{args.n_epochs}')
         
-        train_acc = train(args, model, train_loader, optimizer)
+#         train_acc = train(args, model, train_loader, optimizer)
         
-        valid_acc , outputs = valid(args, model, valid_loader, optimizer)
+#         valid_acc , outputs = valid(args, model, valid_loader, optimizer)
         
-        if valid_acc > best_acc :
-            best_acc = valid_acc
+#         if valid_acc > best_acc :
+#             best_acc = valid_acc
             
-            save_name = f"{args.timm_model}_{str(best_acc.item())[:4]}"
+#             save_name = f"{args.timm_model}_{str(best_acc.item())[:4]}"
             
-            torch.save(model, os.path.join(args.model_path, save_name))
-            print(f'model saved! {save_name}')
+#             torch.save(model, os.path.join(args.model_path, save_name))
+#             print(f'model saved! {save_name}')
         
-        scheduler.step()
+#         scheduler.step()
 
 if __name__=="__main__":
     custom_dir = getArgument()
