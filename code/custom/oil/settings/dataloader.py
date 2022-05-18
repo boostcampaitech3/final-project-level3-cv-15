@@ -1,4 +1,3 @@
-# from torch.utils.data.dataloader import DataLoader
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import pandas as pd
@@ -25,7 +24,6 @@ class OiltrainDataset(Dataset):
             
         oil_labels = data['oil']
         part_labels = data['part']
-        # multi_class_label = self.encode_multi_class(mask_label, gender_label, age_label)
             
         return image, oil_labels
     
@@ -52,9 +50,7 @@ class OilvalDataset(Dataset):
             image = self.transform(image)
             
         oil_labels = data['oil']
-        # print(oil_labels)
         part_labels = data['part']
-        # multi_class_label = self.encode_multi_class(mask_label, gender_label, age_label)
             
         return image, oil_labels
     

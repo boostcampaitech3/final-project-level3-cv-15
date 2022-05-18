@@ -1,4 +1,3 @@
-# from torch.utils.data.dataloader import DataLoader
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import pandas as pd
@@ -24,9 +23,7 @@ class SensitivetrainDataset(Dataset):
             image = self.transform(image)
             
         sensitive_labels = data['sensitive']
-        # print(oil_labels)
         part_labels = data['part']
-        # multi_class_label = self.encode_multi_class(mask_label, gender_label, age_label)
             
         return image, sensitive_labels
     
@@ -53,9 +50,7 @@ class SensitivevalDataset(Dataset):
             image = self.transform(image)
             
         sensitive_labels = data['sensitive']
-        # print(oil_labels)
         part_labels = data['part']
-        # multi_class_label = self.encode_multi_class(mask_label, gender_label, age_label)
             
         return image, sensitive_labels
     
@@ -75,8 +70,8 @@ def getDataloader(train_transform, val_transform, batch, train_worker, valid_wor
     train_data.reset_index(drop=True, inplace=True)
     valid_data.reset_index(drop=True, inplace=True)
     
-    train_dataset= OiltrainDataset(train_data, train_transform)
-    val_dataset= OilvalDataset(valid_data, val_transform)
+    train_dataset= SensitivetrainDataset(train_data, train_transform)
+    val_dataset= SensitivevalDataset(valid_data, val_transform)
     
     train_loader = DataLoader(train_dataset,
                               shuffle=True,
