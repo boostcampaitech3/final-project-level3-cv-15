@@ -1,4 +1,8 @@
-from torch.utils.data.dataloader import DataLoader
+# from torch.utils.data.dataloader import DataLoader
+from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
+import pandas as pd
+from PIL import Image
 
 class OiltrainDataset(Dataset):
     num_classes = 5
@@ -13,7 +17,7 @@ class OiltrainDataset(Dataset):
     def __getitem__(self, idx):
         data=self.df.iloc[idx]
         
-        img_path = "../../../data/naverboostcamp_train/JPEGImages/"+ data['file_name']
+        img_path = "/opt/ml/data/naverboostcamp_train/JPEGImages/"+ data['file_name']
         image = Image.open(img_path)
         
         if self.transform:
@@ -42,7 +46,7 @@ class OilvalDataset(Dataset):
     def __getitem__(self, idx):
         data=self.df.iloc[idx]
         
-        img_path = "../../../../data/naverboostcamp_val/JPEGImages/"+ data['file_name']
+        img_path = "/opt/ml/data/naverboostcamp_val/JPEGImages/"+ data['file_name']
         image = Image.open(img_path)
         
         if self.transform:
@@ -58,37 +62,37 @@ class OilvalDataset(Dataset):
     def __len__(self):
         return len(self.df)
 
-def getDataoader(train_transform, val_transform, batch, train_workder, valid_worker):
-    train_df = pd.read_csv('../../../../data/naverboostcamp_train.csv')
-    val_df = pd.read_csv('../../../../data/naverboostcamp_val.csv')
+def getDataloader(train_transform, val_transform, batch, train_worker, valid_worker):
+    train_data = pd.read_csv('/opt/ml/data/naverboostcamp_train.csv')
+    valid_data = pd.read_csv('/opt/ml/data/naverboostcamp_val.csv')
 
-    train_df = train_df[['part', 'oil', 'file_name']]
-    val_df = val_df[['part', 'oil', 'file_name']]
+    train_data = train_data[['part', 'oil', 'file_name']]
+    valid_data = valid_data[['part', 'oil', 'file_name']]
 
-    train_rm_idx1 = train_df[train_df['oil'] == -1].index
-    train_rm_idx2 = train_df[train_df['oil'] == -2].index
+    train_data = train_data[train_data['oil'] >= 0]
+    valid_data = valid_data[valid_data['oil'] >=0]
 
-    val_rm_idx1 = val_df[val_df['oil'] == -1].index
-    val_rm_idx2 = val_df[val_df['oil'] == -2].index
+#     val_rm_idx1 = val_df[val_df['oil'] == -1].index
+#     val_rm_idx2 = val_df[val_df['oil'] == -2].index
 
-    train_df.drop(train_rm_idx1, inplace=True)
-    train_df.drop(train_rm_idx2, inplace=True)
+#     train_df.drop(train_rm_idx1, inplace=True)
+#     train_df.drop(train_rm_idx2, inplace=True)
 
-    val_df.drop(val_rm_idx1, inplace=True)
-    val_df.drop(val_rm_idx2, inplace=True)
+#     val_df.drop(val_rm_idx1, inplace=True)
+#     val_df.drop(val_rm_idx2, inplace=True)
 
-    train_df.reset_index(drop=True, inplace=True)
-    val_df.reset_index(drop=True, inplace=True)
+    train_data.reset_index(drop=True, inplace=True)
+    valid_data.reset_index(drop=True, inplace=True)
     
-    train_dataset= OiltrainDataset(train_data, transform)
-    val_dataset= OilvalDataset(valid_data, transform)
+    train_dataset= OiltrainDataset(train_data, train_transform)
+    val_dataset= OilvalDataset(valid_data, val_transform)
     
     train_loader = DataLoader(train_dataset,
                               shuffle=True,
-                              num_workers = train_workers,
+                              num_workers = train_worker,
                               batch_size = batch,)
     valid_loader = DataLoader(val_dataset,
                               shuffle=False,
-                              num_workers = valid_workers,
+                              num_workers = valid_worker,
                               batch_size = batch,)
     return train_loader, valid_loader

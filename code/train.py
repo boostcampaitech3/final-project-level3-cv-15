@@ -4,26 +4,35 @@ import os
 import shutil
 from importlib import import_module
 
-from dataset.base_dataset import CustomDataset
-from utils.train_method import train
+from tqdm import tqdm
+# from dataset.base_dataset import CustomDataset
+# from utils.train_method import train
 from utils.set_seed import setSeed
+
+from sklearn.metrics import f1_score
+
+import numpy as np
 
 def getArgument():
     # Custom 폴더 내 훈련 설정 목록을 선택
     parser = argparse.ArgumentParser()
     parser.add_argument('--dir',type=str ,required=True)
-    return parser.parse_known_args()[0].dir
+    parser.add_argument('--arg_n',type=str ,required=True)
+    
+    return parser.parse_known_args()[0].dir, parser.parse_known_args()[0].arg_n
 
-def train(args, model, train_loader, optimizer):
-    criterion = nn.CrossEntropyLoss()
+def train(args, model, train_loader, device,  criterion, optimizer):
+        
+    # criterion = nn.CrossEntropyLoss()
     
     model.train()
     
     corrects=0
+    count = 0
     
     for step,(images,labels) in enumerate(train_loader):
-        images = images.to(args.device)
-        labels = labels.to(args.device)
+        images = images.to(device)
+        labels = labels.to(device)
         
         outputs= model(images)
         # outputs = outputs[0]
@@ -40,34 +49,44 @@ def train(args, model, train_loader, optimizer):
         _, preds = torch.max(outputs,1)
         
         corrects += torch.sum(preds == labels.data)
+        count += outputs.shape[0]
     
-    acc = corrects / args.train_len
+    acc = corrects / count
     
     return acc
 
-def valid(args, model, valid_loader, optimizer):
+def valid(args, model, valid_loader, device,  criterion, optimizer):
     model.eval()
     
     corrects=0
+    count = 0
+    best_f1 = 0 # 추가
+    f1_items = []
     
     for images,labels in valid_loader:
-        images = images.to(args.device)
-        labels = labels.to(args.device)
+        images = images.to(device)
+        labels = labels.to(device)
         
         outputs= model(images)
 
         _, preds = torch.max(outputs,1)
         corrects += torch.sum(preds == labels.data)
+        count += outputs.shape[0]
+        
+        f1_item = f1_score(labels.cpu(), preds.cpu(), average = 'macro') # 추가 
+        f1_items.append(f1_item) 
     
-    acc = corrects / args.valid_len
     
-    print(f'VALID ACC : {acc}\n')
+    acc = corrects / count
+    f1 = np.sum(f1_items) / len(valid_loader) #추가
     
-    return acc, outputs
+    print(f'VALID ACC : {acc} VALID F1 : {f1} \n')
+    
+    return acc, outputs, f1
 
-def main(custom_dir):
+def main(custom_dir, arg_n):
 
-    arg = getattr(import_module(f"custom.{custom_dir}.settings.arg"), "getArg")()
+    arg = getattr(import_module(f"custom.{custom_dir}.settings.{arg_n}"), "getArg")()
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     setSeed(arg.seed)
@@ -84,16 +103,16 @@ def main(custom_dir):
     model = getattr(import_module(f"custom.{custom_dir}.settings.model"), "getModel")(arg.modeltype, device)
     criterion = getattr(import_module(f"custom.{custom_dir}.settings.loss"), "getLoss")()
 
-    optimizer, scheduler = getattr(import_module(f"custom.{custom_dir}.settings.opt_scheduler"), "getOptAndScheduler")(model, arg.lr)
+#     optimizer, scheduler = getattr(import_module(f"custom.{custom_dir}.settings.opt_scheduler"), "getOptAndScheduler")(model, arg.lr)
     
-    optimizer = getattr(import_module(f"custom.{custom_dir}.settings.optimizer"), "getOptimizer")(model, args.optimizer, args.lr)
-    scheduler = getattr(import_module(f"custom.{custom_dir}.settings.scheduler"), "getScheduler")(optimizer)
+    optimizer = getattr(import_module(f"custom.{custom_dir}.settings.optimizer"), "getOptimizer")(model, arg.optimizer, arg.lr)
+    scheduler = getattr(import_module(f"custom.{custom_dir}.settings.scheduler"), "getScheduler")(optimizer, arg.scheduler)
 
     outputPath = os.path.join(arg.output_path, arg.custom_name)
 
     #output Path 내 설정 저장
     shutil.copytree(f"custom/{custom_dir}",outputPath)
-    os.makedirs(outputPath+"/models")
+    os.makedirs(outputPath+"/models", exist_ok=True)
     
     # wandb
     # if arg.wandb:
@@ -101,27 +120,38 @@ def main(custom_dir):
     #         WandBMethod.login(arg, model, criterion)
 
     # train(arg.epoch, model, trainLoader, valLoader, criterion, optimizer,scheduler, outputPath, arg.save_capacity, device, arg.wandb)
-#     best_acc = -1
+    best_acc = -1
+    best_f1 = -1
     
-#     iter_n = 1
+    iter_n = 1
     
-#     for epoch in notebook.tqdm(range(args.n_epochs)):
-#         print(f'Epoch {epoch+1}/{args.n_epochs}')
+    for epoch in tqdm(range(arg.epoch)):
+        print(f'Epoch {epoch+1}/{arg.epoch}')
         
-#         train_acc = train(args, model, train_loader, optimizer)
+        train_acc = train(arg, model, trainLoader, device, criterion, optimizer)
         
-#         valid_acc , outputs = valid(args, model, valid_loader, optimizer)
+        valid_acc , outputs, f1_score = valid(arg, model, valLoader,device, criterion, optimizer)
         
-#         if valid_acc > best_acc :
-#             best_acc = valid_acc
+        if arg.f1 :
+            if f1_score > best_f1 :
+                best_f1 = f1_score
+
+                save_name = f"{arg.custom_name}_{str(best_f1.item())[:4]}"
+
+                torch.save(model, os.path.join(outputPath+"/models", save_name))
+                print(f'model saved! {save_name}')
             
-#             save_name = f"{args.timm_model}_{str(best_acc.item())[:4]}"
-            
-#             torch.save(model, os.path.join(args.model_path, save_name))
-#             print(f'model saved! {save_name}')
+        else :  
+            if valid_acc > best_acc :
+                best_acc = valid_acc
+
+                save_name = f"{arg.custom_name}_{str(best_acc.item())[:4]}"
+
+                torch.save(model, os.path.join(outputPath+"/models", save_name))
+                print(f'model saved! {save_name}')
         
-#         scheduler.step()
+        scheduler.step()
 
 if __name__=="__main__":
-    custom_dir = getArgument()
-    main(custom_dir)
+    custom_dir, arg_n = getArgument()
+    main(custom_dir, arg_n)

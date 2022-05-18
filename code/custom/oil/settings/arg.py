@@ -20,18 +20,21 @@ def getArg():
     # arg.test_worker = 4
     
     #model
-    args.modeltype = 'timm'
+    arg.modeltype = 'timm'
     
     #optimizer 
     arg.lr = 1e-3
-    args.optimizer
+    arg.optimizer = 'adam'
     
     #scheduler
-    args.step = 20
+    arg.scheduler ='steplr'
+    arg.step = 20
     
     #
     arg.output_path = "../output"
-    arg.custom_name = "resnest269e_panet_all"
+    arg.custom_name = "oil4"
+    arg.log_steps=20
+    arg.f1 = True
 
     # arg.wandb = False
     # arg.wandb_project = "segmentation"
