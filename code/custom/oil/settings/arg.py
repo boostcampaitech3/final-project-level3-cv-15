@@ -24,6 +24,7 @@ def getArg():
     
     #optimizer 
     arg.lr = 1e-3
+    args.optimizer
     
     #scheduler
     args.step = 20
