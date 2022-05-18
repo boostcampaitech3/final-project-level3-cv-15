@@ -14,6 +14,9 @@ def getArg():
     
     # model
     arg.modeltype = 'timm'
+    arg.modelname = 'efficientnet_b4'
+    # timm : efficientnet_b4, vit_base_patch16_224
+
     
     # optimizer 
     arg.lr = 1e-3
