@@ -6,3 +6,5 @@
 *.DS_Store
 *.pyc
 data
+/output
+/code/wandb
