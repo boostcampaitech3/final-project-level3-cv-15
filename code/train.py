@@ -60,8 +60,9 @@ def train(args, model, train_loader, device,  criterion, optimizer):
         train_pbar.set_postfix({'acc': (corrects/count).item(), 'loss' : sum(losses)/len(losses)})
     
     acc = corrects / count
-    wandb.log({'train/accuracy' : acc,
-                'train/loss' : sum(losses)/len(losses)})
+    if args.wandb:
+        wandb.log({'train/accuracy' : acc,
+                    'train/loss' : sum(losses)/len(losses)})
     
     return acc
 
@@ -112,11 +113,12 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
     recall = sum(recall_items) / len(recall_items)
     precision = sum(precision_items) / len(precision_items)
 
-    wandb.log({'valid/accuracy' : acc,
-                'valid/loss' : val_loss,
-                'valid/F1_score' : f1,
-                'valid/recall' : recall,
-                'valid/precision' : precision})
+    if args.wandb:
+        wandb.log({'valid/accuracy' : acc,
+                    'valid/loss' : val_loss,
+                    'valid/F1_score' : f1,
+                    'valid/recall' : recall,
+                    'valid/precision' : precision})
     
     return {"accuracy": acc, 
             "loss" : loss, 
@@ -173,7 +175,8 @@ def main(custom_dir, arg_n):
         if goal_metric > best_metric :
             print(f'valid {arg.metric} is imporved from {best_metric:.4f} -> {goal_metric:.4f}... model saved! {save_name}')
             best_metric = goal_metric
-            wandb.run.summary['Best_metric'] = best_metric
+            if arg.wandb:
+                wandb.run.summary['Best_metric'] = best_metric
             try:
                 os.remove(os.path.join(outputPath+"/models", save_name))
             except:
