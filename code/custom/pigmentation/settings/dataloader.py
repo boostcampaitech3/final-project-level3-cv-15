@@ -50,10 +50,11 @@ class PigmentationvalDataset(Dataset):
         if self.transform:
             image = self.transform(image)
             
-        pigmentation_labels = data['pigmentation']
+        oil_labels = data['oil']
         part_labels = data['part']
-            
-        return image, pigmentation_labels
+        image_info = data['file_name']
+          
+        return image, oil_labels, image_info, part_labels
     
     def __len__(self):
         return len(self.df)

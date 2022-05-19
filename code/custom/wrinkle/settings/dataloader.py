@@ -52,8 +52,9 @@ class WrinklevalDataset(Dataset):
             
         wrinkle_labels = data['wrinkle']
         part_labels = data['part']
-            
-        return image, wrinkle_labels
+        image_info = data['file_name']
+          
+        return image, wrinkle_labels, image_info, part_labels
     
     def __len__(self):
         return len(self.df)

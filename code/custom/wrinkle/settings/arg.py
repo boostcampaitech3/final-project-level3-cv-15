@@ -31,7 +31,7 @@ def getArg():
 
     #
     arg.output_path = "../output"
-    arg.custom_name = "wrinkle-gefff"
+    arg.custom_name = "wrinkle-gefff1"
     arg.log_steps=20
 
     # accuracy, loss, f1_score, recall_score, precision_score

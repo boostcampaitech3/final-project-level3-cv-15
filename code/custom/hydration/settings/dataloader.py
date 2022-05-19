@@ -51,11 +51,10 @@ class HydrationvalDataset(Dataset):
             image = self.transform(image)
             
         hydration_labels = data['hydration']
-        # print(oil_labels)
         part_labels = data['part']
-        # multi_class_label = self.encode_multi_class(mask_label, gender_label, age_label)
-            
-        return image, hydration_labels
+        image_info = data['file_name']
+          
+        return image, hydration_labels, image_info, part_labels
     
     def __len__(self):
         return len(self.df)

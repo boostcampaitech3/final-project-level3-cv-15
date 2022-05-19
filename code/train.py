@@ -75,12 +75,15 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
     losses, f1_items, recall_items, precision_items = [], [], [], []
     
     valid_pbar = tqdm(valid_loader)
-    for images,labels in valid_pbar:
+    for step,(images,labels, _, meta) in enumerate(valid_pbar):
         valid_pbar.set_description('Valid')
         images = images.to(device)
         labels = labels.to(device)
+        meta = meta.to(device)
+        meta = meta.reshape(-1,1).float()
         
-        outputs= model(images)
+        outputs= model(images, meta)
+
         loss = criterion(outputs, labels)
         losses.append(loss.item())
 

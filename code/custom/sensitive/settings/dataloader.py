@@ -52,8 +52,9 @@ class SensitivevalDataset(Dataset):
             
         sensitive_labels = data['sensitive']
         part_labels = data['part']
-            
-        return image, sensitive_labels
+        image_info = data['file_name']
+          
+        return image, sensitive_labels, image_info, part_labels
     
     def __len__(self):
         return len(self.df)
