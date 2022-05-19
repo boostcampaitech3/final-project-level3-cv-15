@@ -28,7 +28,7 @@ def getScheduler(optimizer, scheduler, epoch):
         
     # metric에 따른 lr변환
     if scheduler == 'reduceLROnPlateau':
-        scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
+        scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, 'max') # metric을 최대로 하고 싶을땐 "max", 최소로 하고 싶을땐 "min"
 
     if scheduler == 'cycliclr':
         scheduler = lr_scheduler.CyclicLR(optimizer, base_lr=0.00005, step_size_up=5, max_lr=0.0001, gamma=0.5, mode='exp_range')

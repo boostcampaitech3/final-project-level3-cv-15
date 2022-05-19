@@ -182,7 +182,10 @@ def main(custom_dir, arg_n):
 
             torch.save(model, os.path.join(outputPath+"/models", save_name))
         
-        scheduler.step()
+        if arg.scheduler in ["reduceLROnPlateau", "cycliclr"]:
+            scheduler.step(goal_metric)
+        else:
+            scheduler.step()
 
 if __name__=="__main__":
     custom_dir, arg_n = getArgument()
