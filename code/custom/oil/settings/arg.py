@@ -14,6 +14,9 @@ def getArg():
     
     # model
     arg.modeltype = 'timm'
+    arg.modelname = 'efficientnet_b4'
+    # timm : efficientnet_b4, vit_base_patch16_224
+
     
     # optimizer 
     arg.lr = 1e-3
@@ -30,10 +33,12 @@ def getArg():
     arg.output_path = "../output"
     arg.custom_name = "oil4"
     arg.log_steps=20
-    arg.f1 = True
 
-    # arg.wandb = False
-    # arg.wandb_project = "segmentation"
-    # arg.wandb_entity = "cv4"
+    # accuracy, loss, f1_score, recall_score, precision_score
+    arg.metric = "f1_score" 
+
+    arg.wandb = True
+    arg.wandb_project = "XAI project"
+    arg.wandb_entity = "boostcampaitech3"
 
     return arg
