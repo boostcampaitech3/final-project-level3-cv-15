@@ -8,12 +8,12 @@ def getArg():
     arg.seed = 42
     
     # dataloader
-    arg.batch = 16
+    arg.batch = 8
     arg.train_worker = 4
     arg.valid_worker = 4
     
     # model
-    arg.modeltype = 'multiResnest'
+    arg.modeltype = 'giff'
     arg.modelname = 'efficientnet_b4'
     # timm : efficientnet_b4, vit_base_patch16_224
 
@@ -31,11 +31,11 @@ def getArg():
 
     #
     arg.output_path = "../output"
-    arg.custom_name = "oil13"
+    arg.custom_name = "oil-gefff"
     arg.log_steps=20
 
     # accuracy, loss, f1_score, recall_score, precision_score
-    arg.metric = "f1_score" 
+    arg.metric = "accuracy" 
 
     arg.wandb = False
     arg.wandb_project = "XAI project"

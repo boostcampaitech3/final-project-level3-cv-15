@@ -8,12 +8,12 @@ def getArg():
     arg.seed = 42
     
     # dataloader
-    arg.batch = 16
+    arg.batch = 8
     arg.train_worker = 4
     arg.valid_worker = 4
     
     # model
-    arg.modeltype = 'timm'
+    arg.modeltype = 'giff'
     arg.modelname = 'efficientnet_b4'
     # timm : efficientnet_b4, vit_base_patch16_224
 
@@ -31,12 +31,14 @@ def getArg():
 
     #
     arg.output_path = "../output"
-    arg.custom_name = "oil4"
+    arg.custom_name = "pigmentation-gefff"
     arg.log_steps=20
-    arg.f1 = True
 
-    # arg.wandb = False
-    # arg.wandb_project = "segmentation"
-    # arg.wandb_entity = "cv4"
+    # accuracy, loss, f1_score, recall_score, precision_score
+    arg.metric = "accuracy" 
+
+    arg.wandb = False
+    arg.wandb_project = "XAI project"
+    arg.wandb_entity = "boostcampaitech3"
 
     return arg

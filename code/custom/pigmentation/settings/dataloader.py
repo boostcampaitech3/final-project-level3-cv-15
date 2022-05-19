@@ -24,8 +24,9 @@ class PigmentationtrainDataset(Dataset):
             
         pigmentation_labels = data['pigmentation']
         part_labels = data['part']
-            
-        return image, pigmentation_labels
+        image_info = data['file_name']
+          
+        return image, pigmentation_labels, image_info, part_labels
     
     def __len__(self):
         return len(self.df)
