@@ -15,6 +15,8 @@ import numpy as np
 import wandb
 import warnings
 
+from torchvision import models
+
 warnings.filterwarnings('ignore')
 
 def getArgument():
@@ -41,7 +43,8 @@ def train(args, model, train_loader, device,  criterion, optimizer):
         meta = meta.to(device)
         meta = meta.reshape(-1,1).float()
         
-        outputs= model(images, meta)
+        # outputs= model(images, meta)
+        outputs= model(images)
         # outputs = outputs[0]
         
         loss = criterion(outputs, labels)
@@ -82,7 +85,8 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
         meta = meta.to(device)
         meta = meta.reshape(-1,1).float()
         
-        outputs= model(images, meta)
+        # outputs= model(images, meta
+        outputs= model(images)
 
         loss = criterion(outputs, labels)
         losses.append(loss.item())
@@ -142,7 +146,9 @@ def main(custom_dir, arg_n):
     trainLoader, valLoader = getattr(import_module(f"custom.{custom_dir}.settings.dataloader"), "getDataloader")(
         train_transform, val_transform, arg.batch, arg.train_worker, arg.valid_worker)
 
-    model = getattr(import_module(f"custom.{custom_dir}.settings.model"), "getModel")(arg.modeltype, device)
+    # model = getattr(import_module(f"custom.{custom_dir}.settings.model"), "getModel")(arg.modeltype, device)
+    model = models.resnet101(pretrained=True)
+    model.to(device)
     criterion = getattr(import_module(f"custom.{custom_dir}.settings.loss"), "getLoss")(arg.loss)
     
     optimizer = getattr(import_module(f"custom.{custom_dir}.settings.optimizer"), "getOptimizer")(model, arg.optimizer, arg.lr)
@@ -183,9 +189,8 @@ def main(custom_dir, arg_n):
                 os.remove(os.path.join(outputPath+"/models", save_name))
             except:
                 pass
-            save_name = f"{arg.custom_name}_best_{str(best_metric.item())[:4]}"
-
-            torch.save(model, os.path.join(outputPath+"/models", save_name))
+            save_name = f"{arg.custom_name}_best_{str(best_metric.item())[:4]}.pth"
+            torch.save(model.state_dict(), os.path.join(outputPath+"/models", save_name))
         
         scheduler.step()
 
