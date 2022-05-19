@@ -183,7 +183,7 @@ def main(custom_dir, arg_n):
                 pass
             save_name = f"{arg.custom_name}_best_{str(best_metric.item())[:4]}"
 
-            torch.save(model, os.path.join(outputPath+"/models", save_name))
+            torch.save(model, os.path.join(outputPath+"/models", save_name+'.pt'))
         
         if arg.scheduler in ["reduceLROnPlateau", "cycliclr"]:
             scheduler.step(goal_metric)
