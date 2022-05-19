@@ -1,0 +1,19 @@
+program: train.py
+method: bayes
+metric:
+  name: valid/F1_score
+  goal: maximize
+parameters:
+  dir:
+    values: ["oil"]
+  arg_n:
+    values: ["arg"]
+  lr:
+    min: 0.00001
+    max: 0.01
+  optimizer:
+    values: ["adam", "sgd", "adamw"]
+  scheduler:
+    values: ["lambdalr", "multiplicativelr", "cosineannealinglr", "cosineannealingwarmrestart"]
+  loss:
+    values: ["cross_entropy", "focal", "label_smoothing", "f1"]

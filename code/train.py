@@ -148,13 +148,25 @@ def main(custom_dir, arg_n):
 
     outputPath = os.path.join(arg.output_path, arg.custom_name)
 
+    # 동일한 파일명이 있다면 알아서 변경해준다.
+    unique = 1
+    if os.path.exists(outputPath):
+        while os.path.exists(outputPath + str(unique)):
+            unique += 1
+        outputPath = outputPath + str(unique)
+    
+    arg.custom_name = outputPath.split("/")[-1]
+
+    print(arg.custom_name)
+    print(outputPath)
+
     #output Path 내 설정 저장
     shutil.copytree(f"custom/{custom_dir}",outputPath)
     os.makedirs(outputPath+"/models", exist_ok=True)
     
     # wandb
     if arg.wandb:
-            wandb.init(project=arg.wandb_project, entity=arg.wandb_entity, name = arg.custom_name)
+            wandb.init(project=arg.wandb_project, entity=arg.wandb_entity, name = arg.custom_name, config=arg)
             wandb.watch(model)
             wandb.run.summary['metric'] = arg.metric
             wandb.run.summary['optimizer'] = arg.optimizer
