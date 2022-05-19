@@ -34,12 +34,14 @@ def train(args, model, train_loader, device,  criterion, optimizer):
     losses = []
     
     train_pbar = tqdm(train_loader)
-    for step,(images,labels) in enumerate(train_pbar):
+    for step,(images,labels, _, meta) in enumerate(train_pbar):
         train_pbar.set_description('Train')
         images = images.to(device)
         labels = labels.to(device)
+        meta = meta.to(device)
+        meta = meta.reshape(-1,1).float()
         
-        outputs= model(images)
+        outputs= model(images, meta)
         # outputs = outputs[0]
         
         loss = criterion(outputs, labels)
@@ -60,9 +62,8 @@ def train(args, model, train_loader, device,  criterion, optimizer):
         train_pbar.set_postfix({'acc': (corrects/count).item(), 'loss' : sum(losses)/len(losses)})
     
     acc = corrects / count
-    if args.wandb:
-        wandb.log({'train/accuracy' : acc,
-                    'train/loss' : sum(losses)/len(losses)})
+    wandb.log({'train/accuracy' : acc,
+                'train/loss' : sum(losses)/len(losses)})
     
     return acc
 
@@ -113,12 +114,11 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
     recall = sum(recall_items) / len(recall_items)
     precision = sum(precision_items) / len(precision_items)
 
-    if args.wandb:
-        wandb.log({'valid/accuracy' : acc,
-                    'valid/loss' : val_loss,
-                    'valid/F1_score' : f1,
-                    'valid/recall' : recall,
-                    'valid/precision' : precision})
+    wandb.log({'valid/accuracy' : acc,
+                'valid/loss' : val_loss,
+                'valid/F1_score' : f1,
+                'valid/recall' : recall,
+                'valid/precision' : precision})
     
     return {"accuracy": acc, 
             "loss" : loss, 
@@ -139,7 +139,7 @@ def main(custom_dir, arg_n):
     trainLoader, valLoader = getattr(import_module(f"custom.{custom_dir}.settings.dataloader"), "getDataloader")(
         train_transform, val_transform, arg.batch, arg.train_worker, arg.valid_worker)
 
-    model = getattr(import_module(f"custom.{custom_dir}.settings.model"), "getModel")(arg.modeltype, device, arg.modelname)
+    model = getattr(import_module(f"custom.{custom_dir}.settings.model"), "getModel")(arg.modeltype, device)
     criterion = getattr(import_module(f"custom.{custom_dir}.settings.loss"), "getLoss")(arg.loss)
     
     optimizer = getattr(import_module(f"custom.{custom_dir}.settings.optimizer"), "getOptimizer")(model, arg.optimizer, arg.lr)
@@ -175,20 +175,16 @@ def main(custom_dir, arg_n):
         if goal_metric > best_metric :
             print(f'valid {arg.metric} is imporved from {best_metric:.4f} -> {goal_metric:.4f}... model saved! {save_name}')
             best_metric = goal_metric
-            if arg.wandb:
-                wandb.run.summary['Best_metric'] = best_metric
+            wandb.run.summary['Best_metric'] = best_metric
             try:
                 os.remove(os.path.join(outputPath+"/models", save_name))
             except:
                 pass
             save_name = f"{arg.custom_name}_best_{str(best_metric.item())[:4]}"
 
-            torch.save(model, os.path.join(outputPath+"/models", save_name+'.pt'))
+            torch.save(model, os.path.join(outputPath+"/models", save_name))
         
-        if arg.scheduler in ["reduceLROnPlateau", "cycliclr"]:
-            scheduler.step(goal_metric)
-        else:
-            scheduler.step()
+        scheduler.step()
 
 if __name__=="__main__":
     custom_dir, arg_n = getArgument()

@@ -13,7 +13,7 @@ def getArg():
     arg.valid_worker = 4
     
     # model
-    arg.modeltype = 'timm'
+    arg.modeltype = 'multiResnest'
     arg.modelname = 'efficientnet_b4'
     # timm : efficientnet_b4, vit_base_patch16_224
 
@@ -31,13 +31,13 @@ def getArg():
 
     #
     arg.output_path = "../output"
-    arg.custom_name = "oil6"
+    arg.custom_name = "oil13"
     arg.log_steps=20
 
     # accuracy, loss, f1_score, recall_score, precision_score
     arg.metric = "f1_score" 
 
-    arg.wandb = True
+    arg.wandb = False
     arg.wandb_project = "XAI project"
     arg.wandb_entity = "boostcampaitech3"
 
