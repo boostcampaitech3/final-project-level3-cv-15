@@ -24,9 +24,10 @@ class OiltrainDataset(Dataset):
             
         oil_labels = data['oil']
         part_labels = data['part']
+        image_info = data['file_name']
+          
+        return image, oil_labels, image_info, part_labels
             
-        return image, oil_labels
-    
     def __len__(self):
         return len(self.df)
 
