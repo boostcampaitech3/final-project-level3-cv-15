@@ -19,6 +19,7 @@ warnings.filterwarnings('ignore')
 
 def getArgument():
     # Custom 폴더 내 훈련 설정 목록을 선택
+    # test
     parser = argparse.ArgumentParser()
     parser.add_argument('--dir',type=str ,required=True)
     parser.add_argument('--arg_n',type=str ,required=True)
