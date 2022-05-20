@@ -44,3 +44,12 @@ def getModel(modeltype, device, model_n):
     model.to(device)
     
     return model
+
+def getRegressionModel(modeltype, device, model_n):
+    if modeltype == 'timm':
+        model = Timm(class_n = 1, model_n = model_n)
+    elif modeltype == 'efficientb4':
+        model = EfficientNet_b4(class_n = 1)
+    
+    model.to(device)
+    return model

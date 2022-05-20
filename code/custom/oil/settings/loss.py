@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
+from sklearn.metrics import mean_squared_error
 
 # https://discuss.pytorch.org/t/is-this-a-correct-implementation-for-focal-loss-in-pytorch/43327/8
 class FocalLoss(nn.Module):
@@ -65,11 +66,19 @@ class F1Loss(nn.Module):
         f1 = f1.clamp(min=self.epsilon, max=1 - self.epsilon)
         return 1 - f1.mean()
 
+class MeanSquaredError(nn.Module):
+    def __init__(self):
+        super().__init__()
+    def forward(self, y_pred, y_true):
+        return ((y_true - y_pred) ** 2).mean() 
+
+
 _criterion_entrypoints = {
     'cross_entropy': nn.CrossEntropyLoss,
     'focal': FocalLoss,
     'label_smoothing': LabelSmoothingLoss,
-    'f1': F1Loss
+    'f1': F1Loss,
+    'mse' : MeanSquaredError
 }
 
 

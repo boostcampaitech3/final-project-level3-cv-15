@@ -4,7 +4,7 @@ def getArg():
     arg = eDict()
     
     # settings
-    arg.epoch = 20
+    arg.epoch = 30
     arg.seed = 42
     
     # dataloader
@@ -13,6 +13,7 @@ def getArg():
     arg.valid_worker = 4
     
     # model
+    arg.regression = False
     arg.modeltype = 'timm'
     arg.modelname = 'efficientnet_b4'
     # timm : efficientnet_b4, vit_base_patch16_224
@@ -27,15 +28,15 @@ def getArg():
     arg.step = 20
     
     # loss
-    arg.loss = 'cross_entropy'
+    # pick 'mse' if regression mode
+    arg.loss = 'focal'
 
-    #
     arg.output_path = "../output"
-    arg.custom_name = "oil6"
+    arg.custom_name = "oil_cf_test"
     arg.log_steps=20
 
     # accuracy, loss, f1_score, recall_score, precision_score
-    arg.metric = "f1_score" 
+    arg.metric = "accuracy" 
 
     arg.wandb = True
     arg.wandb_project = "XAI project"
