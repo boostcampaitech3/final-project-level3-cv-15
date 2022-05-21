@@ -23,12 +23,26 @@ def getArgument():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dir',type=str ,required=True)
     parser.add_argument('--arg_n',type=str ,required=True)
-    parser.add_argument('--lr',type=str ,required=True)
-    parser.add_argument('--optimizer',type=str ,required=True)
-    parser.add_argument('--loss',type=str ,required=True)
-    parser.add_argument('--scheduler',type=str ,required=True)
+    parser.add_argument('--lr',type=str ,required=False)
+    parser.add_argument('--optimizer',type=str ,required=False)
+    parser.add_argument('--loss',type=str ,required=False)
+    parser.add_argument('--scheduler',type=str ,required=False)
+    parser.add_argument('--batch',type=str ,required=False)
+    parser.add_argument('--seed',type=str ,required=False)
+    parser.add_argument('--modeltype',type=str ,required=False)
+    parser.add_argument('--modelname',type=str ,required=False)
     
-    return parser.parse_known_args()[0].dir, parser.parse_known_args()[0].arg_n, parser.parse_known_args()[0].lr, parser.parse_known_args()[0].optimizer, parser.parse_known_args()[0].loss,parser.parse_known_args()[0].scheduler
+    return parser.parse_known_args()[0].dir, \
+    parser.parse_known_args()[0].arg_n, \
+    parser.parse_known_args()[0].lr, \
+    parser.parse_known_args()[0].optimizer, \
+    parser.parse_known_args()[0].loss,\
+    parser.parse_known_args()[0].scheduler,\
+    parser.parse_known_args()[0].seed,\
+    parser.parse_known_args()[0].batch,\
+    parser.parse_known_args()[0].modeltype,\
+    parser.parse_known_args()[0].modelname,\
+
 
 def train(args, model, train_loader, device,  criterion, optimizer):
     
@@ -132,13 +146,26 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
             "precision" : precision, 
             }
 
-def main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler):
+def main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _modeltype, _modelname):
 
     arg = getattr(import_module(f"custom.{custom_dir}.settings.{arg_n}"), "getArg")()
-    arg.lr = float(_lr)
-    arg.optimizer = _optimizer
-    arg.loss = _loss
-    arg.scheduler = _scheduler
+    if _lr:
+        arg.lr = float(_lr)
+    if _optimizer:
+        arg.optimizer = _optimizer
+    if _loss:
+        arg.loss = _loss
+    if _scheduler:
+        arg.scheduler = _scheduler
+    if _seed:
+        arg.seed = int(_seed)
+    if _batch:
+        arg.batch = int(batch)
+    if _modeltype:
+        arg.modeltype = _modeltype
+    if _modelname:
+        arg.modelname = _modelname
+    # custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _modeltype,_modelname
     print(arg)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -210,5 +237,5 @@ def main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler):
             scheduler.step()
 
 if __name__=="__main__":
-    custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler = getArgument()
-    main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler)
+    custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _modeltype,_modelname = getArgument()
+    main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _modeltype,_modelname)

@@ -27,7 +27,7 @@ def getArg():
     arg.step = 20
     
     # loss
-    arg.loss = 'cross_entropy'
+    arg.loss = 'cross_entropy' 
 
     #
     arg.output_path = "../output"

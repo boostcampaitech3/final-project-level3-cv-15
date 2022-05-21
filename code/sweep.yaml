@@ -1,13 +1,18 @@
 program: train.py
+
 method: bayes
+
 metric:
   name: valid/F1_score
   goal: maximize
+  
 parameters:
   dir:
     values: ["oil"]
   arg_n:
     values: ["arg"]
+  seed:
+    values: [42, 24,5]
   lr:
     min: 0.00001
     max: 0.01
