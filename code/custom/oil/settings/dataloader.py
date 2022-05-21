@@ -1,3 +1,4 @@
+# from torch.utils.data.dataloader import DataLoader
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import pandas as pd
@@ -10,9 +11,10 @@ class OiltrainDataset(Dataset):
     part_labels = []
     oil_labels = []
     
-    def __init__(self, df, transform=None):
+    def __init__(self, df, transform=None, use_meta = False):
         self.df = df
         self.transform = transform
+        self.use_meta = use_meta
     def __getitem__(self, idx):
         data=self.df.iloc[idx]
         
@@ -25,9 +27,12 @@ class OiltrainDataset(Dataset):
         oil_labels = data['oil']
         part_labels = data['part']
         image_info = data['file_name']
-          
-        return image, oil_labels, image_info, part_labels
-            
+        # multi_class_label = self.encode_multi_class(mask_label, gender_label, age_label)
+        if self.use_meta:
+            return image, oil_labels, image_info, part_labels
+        else:
+            return image, oil_labels
+    
     def __len__(self):
         return len(self.df)
 
@@ -38,9 +43,10 @@ class OilvalDataset(Dataset):
     part_labels = []
     oil_labels = []
     
-    def __init__(self, df, transform=None):
+    def __init__(self, df, transform=None, use_meta = False):
         self.df = df
         self.transform = transform
+        self.use_meta = use_meta
     def __getitem__(self, idx):
         data=self.df.iloc[idx]
         
@@ -51,30 +57,36 @@ class OilvalDataset(Dataset):
             image = self.transform(image)
             
         oil_labels = data['oil']
+        # print(oil_labels)
         part_labels = data['part']
         image_info = data['file_name']
-          
-        return image, oil_labels, image_info, part_labels
+        # multi_class_label = self.encode_multi_class(mask_label, gender_label, age_label)
+        if self.use_meta:
+            return image, oil_labels, image_info, part_labels
+        else:
+            return image, oil_labels
     
     def __len__(self):
         return len(self.df)
 
-def getDataloader(train_transform, val_transform, batch, train_worker, valid_worker):
+def getDataloader(train_transform, val_transform, batch, train_worker, valid_worker, use_meta):
     train_data = pd.read_csv('/opt/ml/data/naverboostcamp_train.csv')
     valid_data = pd.read_csv('/opt/ml/data/naverboostcamp_val.csv')
 
     train_data = train_data[['part', 'oil', 'file_name']]
     valid_data = valid_data[['part', 'oil', 'file_name']]
+    print(len(train_data), len(valid_data))
 
     train_data = train_data[train_data['oil'] >= 0]
     valid_data = valid_data[valid_data['oil'] >=0]
+    print(len(train_data), len(valid_data))
  
 
     train_data.reset_index(drop=True, inplace=True)
     valid_data.reset_index(drop=True, inplace=True)
     
-    train_dataset= OiltrainDataset(train_data, train_transform)
-    val_dataset= OilvalDataset(valid_data, val_transform)
+    train_dataset= OiltrainDataset(train_data, train_transform, use_meta)
+    val_dataset= OilvalDataset(valid_data, val_transform, use_meta)
     
     train_loader = DataLoader(train_dataset,
                               shuffle=True,
@@ -85,3 +97,4 @@ def getDataloader(train_transform, val_transform, batch, train_worker, valid_wor
                               num_workers = valid_worker,
                               batch_size = batch,)
     return train_loader, valid_loader
+

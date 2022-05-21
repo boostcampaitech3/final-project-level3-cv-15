@@ -13,7 +13,7 @@ def getArg():
     arg.valid_worker = 4
     
     # model
-    arg.modeltype = 'giff'
+    arg.modeltype = 'timm'
     arg.modelname = 'efficientnet_b4'
     # timm : efficientnet_b4, vit_base_patch16_224
 
@@ -31,7 +31,7 @@ def getArg():
 
     #
     arg.output_path = "../output"
-    arg.custom_name = "oil_origin"
+    arg.custom_name = "test_use_meta_x"
     arg.log_steps=20
 
     # accuracy, loss, f1_score, recall_score, precision_score

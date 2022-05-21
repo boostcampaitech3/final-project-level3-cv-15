@@ -26,10 +26,11 @@ def getArgument():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dir',type=str ,required=True)
     parser.add_argument('--arg_n',type=str ,required=True)
+    parser.add_argument('--use_meta', action='store_true')
     
-    return parser.parse_known_args()[0].dir, parser.parse_known_args()[0].arg_n
+    return parser.parse_known_args()[0].dir, parser.parse_known_args()[0].arg_n, parser.parse_known_args()[0].use_meta
 
-def train(args, model, train_loader, device,  criterion, optimizer):
+def train(args, model, train_loader, device,  criterion, optimizer, use_meta):
     
     model.train()
     
@@ -38,16 +39,18 @@ def train(args, model, train_loader, device,  criterion, optimizer):
     losses = []
     
     train_pbar = tqdm(train_loader)
-    for step,(images,labels, _, meta) in enumerate(train_pbar):
+    for step, data in enumerate(train_pbar):
         train_pbar.set_description('Train')
-        images = images.to(device)
-        labels = labels.to(device)
-        meta = meta.to(device)
-        meta = meta.reshape(-1,1).float()
-        
-        # outputs= model(images, meta)
-        outputs= model(images)
-        # outputs = outputs[0]
+        if use_meta:
+            images, labels, _, meta = data
+            images, labels, meta = images.to(device), labels.to(device), meta.to(device)
+            meta = meta.reshape(-1,1).float()
+            outputs= model(images, meta)
+        else:
+            images, labels = data
+            images, labels = images.to(device), labels.to(device)
+            outputs= model(images)
+
         
         loss = criterion(outputs, labels)
         losses.append(loss.item())
@@ -72,7 +75,7 @@ def train(args, model, train_loader, device,  criterion, optimizer):
     
     return acc
 
-def valid(args, model, valid_loader, device,  criterion, optimizer):
+def valid(args, model, valid_loader, device, criterion, optimizer, use_meta):
     model.eval()
     
     corrects=0
@@ -80,15 +83,18 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
     losses, f1_items, recall_items, precision_items = [], [], [], []
     
     valid_pbar = tqdm(valid_loader)
-    for step,(images,labels, _, meta) in enumerate(valid_pbar):
+    for step, data in enumerate(valid_pbar):
         valid_pbar.set_description('Valid')
-        images = images.to(device)
-        labels = labels.to(device)
-        meta = meta.to(device)
-        meta = meta.reshape(-1,1).float()
+        if use_meta:
+            images, labels, _, meta = data
+            images, labels, meta = images.to(device), labels.to(device), meta.to(device)
+            meta = meta.reshape(-1,1).float()
+            outputs= model(images, meta)
         
-        # outputs= model(images, meta
-        outputs= model(images)
+        else:
+            images, labels = data
+            images, labels = images.to(device), labels.to(device)
+            outputs= model(images)
 
         loss = criterion(outputs, labels)
         losses.append(loss.item())
@@ -136,22 +142,23 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
             "precision" : precision, 
             }
 
-def main(custom_dir, arg_n):
-
+def main(custom_dir, arg_n, use_meta):
+    print("using meta : ", use_meta)
     arg = getattr(import_module(f"custom.{custom_dir}.settings.{arg_n}"), "getArg")()
-
+    print(arg.modeltype)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     setSeed(arg.seed)
 
     train_transform, val_transform = getattr(import_module(f"custom.{custom_dir}.settings.transform"), "getTransform")()
 
     trainLoader, valLoader = getattr(import_module(f"custom.{custom_dir}.settings.dataloader"), "getDataloader")(
-        train_transform, val_transform, arg.batch, arg.train_worker, arg.valid_worker)
+        train_transform, val_transform, arg.batch, arg.train_worker, arg.valid_worker, use_meta)
 
-    # model = getattr(import_module(f"custom.{custom_dir}.settings.model"), "getModel")(arg.modeltype, device)
+    model = getattr(import_module(f"custom.{custom_dir}.settings.model"), "getModel")(arg.modeltype, device)
     # model = models.resnet101(pretrained=True)
-    model = timm.create_model('efficientnet_b4', pretrained=True, num_classes=5)
+    # model = timm.create_model('efficientnet_b4', pretrained=True, num_classes=5)
     model.to(device)
+
     criterion = getattr(import_module(f"custom.{custom_dir}.settings.loss"), "getLoss")(arg.loss)
     
     optimizer = getattr(import_module(f"custom.{custom_dir}.settings.optimizer"), "getOptimizer")(model, arg.optimizer, arg.lr)
@@ -179,9 +186,9 @@ def main(custom_dir, arg_n):
     for epoch in range(arg.epoch):
         print(f'Epoch {epoch+1}/{arg.epoch}')
         
-        train_acc = train(arg, model, trainLoader, device, criterion, optimizer)
+        train_acc = train(arg, model, trainLoader, device, criterion, optimizer, use_meta)
 
-        metrics = valid(arg, model, valLoader,device, criterion, optimizer)
+        metrics = valid(arg, model, valLoader,device, criterion, optimizer, use_meta)
         goal_metric = metrics[arg.metric]
         
         if goal_metric > best_metric :
@@ -198,5 +205,5 @@ def main(custom_dir, arg_n):
         scheduler.step()
 
 if __name__=="__main__":
-    custom_dir, arg_n = getArgument()
-    main(custom_dir, arg_n)
+    custom_dir, arg_n, use_meta = getArgument()
+    main(custom_dir, arg_n, use_meta)
