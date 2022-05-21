@@ -69,6 +69,7 @@ def train(args, model, train_loader, device,  criterion, optimizer):
 def valid(args, model, valid_loader, device,  criterion, optimizer):
     model.eval()
     
+    all_labels, all_preds = [], []
     corrects=0
     count = 0
     losses, f1_items, recall_items, precision_items = [], [], [], []
@@ -77,6 +78,7 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
     for images,labels in valid_pbar:
         valid_pbar.set_description('Valid')
         images = images.to(device)
+        all_labels += list(map(lambda x : x.item(), labels))
         labels = labels.to(device)
         
         outputs= model(images)
@@ -86,6 +88,7 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
         _, preds = torch.max(outputs,1)
         corrects += torch.sum(preds == labels.data)
         count += outputs.shape[0]
+        all_preds += (preds.cpu().detach().tolist())
         
         ## f1 score
         f1_item = f1_score(labels.cpu(), preds.cpu(), average = 'macro') # 추가 
@@ -119,6 +122,7 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
                     'valid/F1_score' : f1,
                     'valid/recall' : recall,
                     'valid/precision' : precision})
+        wandb.sklearn.plot_confusion_matrix(all_labels, all_preds, labels=range(5))
     
     return {"accuracy": acc, 
             "loss" : loss, 
