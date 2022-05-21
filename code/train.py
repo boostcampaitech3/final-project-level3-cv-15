@@ -147,6 +147,15 @@ def main(custom_dir, arg_n):
 
     outputPath = os.path.join(arg.output_path, arg.custom_name)
 
+    # change outputPath if outputPath already exists 
+    unique = 1	
+    if os.path.exists(outputPath):	
+        while os.path.exists(outputPath + str(unique)):	
+            unique += 1	
+        outputPath = outputPath + str(unique)	
+    	
+    arg.custom_name = outputPath.split("/")[-1]
+
     #output Path 내 설정 저장
     shutil.copytree(f"custom/{custom_dir}",outputPath)
     os.makedirs(outputPath+"/models", exist_ok=True)
