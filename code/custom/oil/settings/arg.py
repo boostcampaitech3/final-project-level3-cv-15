@@ -4,7 +4,7 @@ def getArg():
     arg = eDict()
     
     # settings
-    arg.epoch = 25
+    arg.epoch = 20
     arg.seed = 42
     
     # dataloader

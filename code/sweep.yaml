@@ -14,6 +14,6 @@ parameters:
   optimizer:
     values: ["adam", "sgd", "adamw"]
   scheduler:
-    values: ["lambdalr", "multiplicativelr", "cosineannealinglr", "cosineannealingwarmrestart"]
+    values: ["lambdalr", "cosineannealinglr", "cosineannealingwarmrestart","exponentiallr","steplr"]
   loss:
     values: ["cross_entropy", "focal", "label_smoothing", "f1"]

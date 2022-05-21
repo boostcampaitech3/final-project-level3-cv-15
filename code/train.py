@@ -23,8 +23,12 @@ def getArgument():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dir',type=str ,required=True)
     parser.add_argument('--arg_n',type=str ,required=True)
+    parser.add_argument('--lr',type=str ,required=True)
+    parser.add_argument('--optimizer',type=str ,required=True)
+    parser.add_argument('--loss',type=str ,required=True)
+    parser.add_argument('--scheduler',type=str ,required=True)
     
-    return parser.parse_known_args()[0].dir, parser.parse_known_args()[0].arg_n
+    return parser.parse_known_args()[0].dir, parser.parse_known_args()[0].arg_n, parser.parse_known_args()[0].lr, parser.parse_known_args()[0].optimizer, parser.parse_known_args()[0].loss,parser.parse_known_args()[0].scheduler
 
 def train(args, model, train_loader, device,  criterion, optimizer):
     
@@ -128,9 +132,14 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
             "precision" : precision, 
             }
 
-def main(custom_dir, arg_n):
+def main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler):
 
     arg = getattr(import_module(f"custom.{custom_dir}.settings.{arg_n}"), "getArg")()
+    arg.lr = float(_lr)
+    arg.optimizer = _optimizer
+    arg.loss = _loss
+    arg.scheduler = _scheduler
+    print(arg)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     setSeed(arg.seed)
@@ -156,9 +165,6 @@ def main(custom_dir, arg_n):
         outputPath = outputPath + str(unique)
     
     arg.custom_name = outputPath.split("/")[-1]
-
-    print(arg.custom_name)
-    print(outputPath)
 
     #output Path 내 설정 저장
     shutil.copytree(f"custom/{custom_dir}",outputPath)
@@ -204,5 +210,5 @@ def main(custom_dir, arg_n):
             scheduler.step()
 
 if __name__=="__main__":
-    custom_dir, arg_n = getArgument()
-    main(custom_dir, arg_n)
+    custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler = getArgument()
+    main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler)
