@@ -4,6 +4,8 @@ import os
 import shutil
 from importlib import import_module
 
+import timm
+
 from tqdm import tqdm
 # from dataset.base_dataset import CustomDataset
 # from utils.train_method import train
@@ -147,7 +149,8 @@ def main(custom_dir, arg_n):
         train_transform, val_transform, arg.batch, arg.train_worker, arg.valid_worker)
 
     # model = getattr(import_module(f"custom.{custom_dir}.settings.model"), "getModel")(arg.modeltype, device)
-    model = models.resnet101(pretrained=True)
+    # model = models.resnet101(pretrained=True)
+    model = timm.create_model('efficientnet_b4', pretrained=True, num_classes=5)
     model.to(device)
     criterion = getattr(import_module(f"custom.{custom_dir}.settings.loss"), "getLoss")(arg.loss)
     
