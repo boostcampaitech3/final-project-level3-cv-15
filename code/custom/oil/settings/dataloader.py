@@ -2,6 +2,8 @@ from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import pandas as pd
 from PIL import Image
+import cv2
+import albumentations as A
 
 class OiltrainDataset(Dataset):
     num_classes = 5
@@ -17,7 +19,10 @@ class OiltrainDataset(Dataset):
         data=self.df.iloc[idx]
         
         img_path = "/opt/ml/data/naverboostcamp_train/JPEGImages/"+ data['file_name']
-        image = Image.open(img_path)
+        # image = Image.open(img_path)
+        image = cv2.imread(img_path)
+        image = A.Resize(always_apply=False, p=1.0, height=500, width=700, interpolation=0)(image = image)
+        image = image["image"]
         
         if self.transform:
             image = self.transform(image)
@@ -44,7 +49,10 @@ class OilvalDataset(Dataset):
         data=self.df.iloc[idx]
         
         img_path = "/opt/ml/data/naverboostcamp_val/JPEGImages/"+ data['file_name']
-        image = Image.open(img_path)
+        # image = Image.open(img_path)
+        image = cv2.imread(img_path)
+        image = A.Resize(always_apply=False, p=1.0, height=500, width=700, interpolation=0)(image = image)
+        image = image["image"]
         
         if self.transform:
             image = self.transform(image)

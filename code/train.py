@@ -14,6 +14,7 @@ from sklearn.metrics import f1_score, recall_score, precision_score
 import numpy as np
 import wandb
 import warnings
+import gc
 
 warnings.filterwarnings('ignore')
 
@@ -214,6 +215,7 @@ def main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _
         print(f'Epoch {epoch+1}/{arg.epoch}')
         
         train_acc = train(arg, model, trainLoader, device, criterion, optimizer)
+        gc.collect()
 
         metrics = valid(arg, model, valLoader,device, criterion, optimizer)
         goal_metric = metrics[arg.metric]

@@ -4,11 +4,11 @@ def getArg():
     arg = eDict()
     
     # settings
-    arg.epoch = 20
+    arg.epoch = 35
     arg.seed = 42
     
     # dataloader
-    arg.batch = 16
+    arg.batch = 4
     arg.train_worker = 4
     arg.valid_worker = 4
     
@@ -19,15 +19,15 @@ def getArg():
 
     
     # optimizer 
-    arg.lr = 1e-3
-    arg.optimizer = 'adam'
+    arg.lr = 0.0057
+    arg.optimizer = 'adamw'
     
     # scheduler
-    arg.scheduler ='steplr'
+    arg.scheduler ='lambdalr'
     arg.step = 20
     
     # loss
-    arg.loss = 'cross_entropy' 
+    arg.loss = 'focal' 
 
     #
     arg.output_path = "../output"
