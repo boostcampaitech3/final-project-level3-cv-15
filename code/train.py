@@ -192,7 +192,7 @@ def main(custom_dir, arg_n):
             if arg.wandb:
                 wandb.run.summary['Best_metric'] = best_metric
             try:
-                os.remove(os.path.join(outputPath+"/models", save_name))
+                os.remove(os.path.join(outputPath+"/models", save_name+'.pt'))
             except:
                 pass
             save_name = f"{arg.custom_name}_best_{str(best_metric.item())[:4]}"
