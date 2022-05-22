@@ -94,37 +94,38 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
     losses, f1_items, recall_items, precision_items = [], [], [], []
     
     valid_pbar = tqdm(valid_loader)
-    for images,labels in valid_pbar:
-        valid_pbar.set_description('Valid')
-        images = images.to(device)
-        labels = labels.to(device)
-        
-        outputs= model(images)
-        loss = criterion(outputs, labels)
-        losses.append(loss.item())
+    with torch.no_grad():
+        for images,labels in valid_pbar:
+            valid_pbar.set_description('Valid')
+            images = images.to(device)
+            labels = labels.to(device)
+            
+            outputs= model(images)
+            loss = criterion(outputs, labels)
+            losses.append(loss.item())
 
-        _, preds = torch.max(outputs,1)
-        corrects += torch.sum(preds == labels.data)
-        count += outputs.shape[0]
-        
-        ## f1 score
-        f1_item = f1_score(labels.cpu(), preds.cpu(), average = 'macro') # 추가 
-        f1_items.append(f1_item) 
+            _, preds = torch.max(outputs,1)
+            corrects += torch.sum(preds == labels.data)
+            count += outputs.shape[0]
+            
+            ## f1 score
+            f1_item = f1_score(labels.cpu(), preds.cpu(), average = 'macro') # 추가 
+            f1_items.append(f1_item) 
 
-        ## recall
-        recall_item = recall_score(labels.cpu(), preds.cpu(), average = 'macro')
-        recall_items.append(recall_item)
+            ## recall
+            recall_item = recall_score(labels.cpu(), preds.cpu(), average = 'macro')
+            recall_items.append(recall_item)
 
-        ## precision
-        precision_item = precision_score(labels.cpu(), preds.cpu(), average = 'macro')
-        precision_items.append(precision_item)
+            ## precision
+            precision_item = precision_score(labels.cpu(), preds.cpu(), average = 'macro')
+            precision_items.append(precision_item)
 
-        valid_pbar.set_postfix({'acc': (corrects/count).item(), 
-                                'loss' : sum(losses)/len(losses),
-                                'f1' : sum(f1_items)/len(f1_items),
-                                'recall' : sum(recall_items)/len(recall_items),
-                                'precision' : sum(precision_items)/len(precision_items)
-                                })
+            valid_pbar.set_postfix({'acc': (corrects/count).item(), 
+                                    'loss' : sum(losses)/len(losses),
+                                    'f1' : sum(f1_items)/len(f1_items),
+                                    'recall' : sum(recall_items)/len(recall_items),
+                                    'precision' : sum(precision_items)/len(precision_items)
+                                    })
     
     
     acc = corrects / count

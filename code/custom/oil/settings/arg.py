@@ -8,7 +8,7 @@ def getArg():
     arg.seed = 42
     
     # dataloader
-    arg.batch = 4
+    arg.batch = 16
     arg.train_worker = 4
     arg.valid_worker = 4
     
@@ -31,7 +31,7 @@ def getArg():
 
     #
     arg.output_path = "../output"
-    arg.custom_name = "oil"
+    arg.custom_name = "Son_oil_no-aug"
     arg.log_steps=20
 
     # accuracy, loss, f1_score, recall_score, precision_score
