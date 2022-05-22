@@ -4,10 +4,11 @@ import pandas as pd
 from PIL import Image
 import cv2
 import albumentations as A
+import numpy as np
 
 class OiltrainDataset(Dataset):
+
     num_classes = 5
-    
     image_paths = []
     part_labels = []
     oil_labels = []
@@ -15,20 +16,27 @@ class OiltrainDataset(Dataset):
     def __init__(self, df, transform=None):
         self.df = df
         self.transform = transform
+
     def __getitem__(self, idx):
         data=self.df.iloc[idx]
-        
         img_path = "/opt/ml/data/naverboostcamp_train/JPEGImages/"+ data['file_name']
+
+        oil_labels = data['oil']
+        part_labels = data['part']
         # image = Image.open(img_path)
         image = cv2.imread(img_path)
         image = A.Resize(always_apply=False, p=1.0, height=500, width=700, interpolation=0)(image = image)
         image = image["image"]
-        
+        if int(part_labels) == 1:
+            image = cv2.rectangle(image, (0,0), (700,120), (0,0,0),-1)
+            image = cv2.rectangle(image, (0,400), (700,500), (0,0,0),-1)
+            polly1 = np.array([[200,100],[0,100],[0,400]])
+            polly2 = np.array([[500,100],[700,100],[700,400]])
+            image = cv2.fillPoly(image,[polly1],color=(0,0,0))
+            image = cv2.fillPoly(image,[polly2],color=(0,0,0))
+
         if self.transform:
             image = self.transform(image)
-            
-        oil_labels = data['oil']
-        part_labels = data['part']
             
         return image, oil_labels
     
@@ -50,15 +58,25 @@ class OilvalDataset(Dataset):
         
         img_path = "/opt/ml/data/naverboostcamp_val/JPEGImages/"+ data['file_name']
         # image = Image.open(img_path)
+        oil_labels = data['oil']
+        part_labels = data['part']
+
         image = cv2.imread(img_path)
         image = A.Resize(always_apply=False, p=1.0, height=500, width=700, interpolation=0)(image = image)
         image = image["image"]
+        # if int(part_labels) == 1:
+        #     image = cv2.rectangle(image, (0,0), (700,120), (0,0,0),-1)
+        #     image = cv2.rectangle(image, (0,400), (700,500), (0,0,0),-1)
+        #     polly1 = np.array([[200,100],[0,100],[0,400]])
+        #     polly2 = np.array([[500,100],[700,100],[700,400]])
+        #     image = cv2.fillPoly(image,[polly1],color=(0,0,0))
+        #     image = cv2.fillPoly(image,[polly2],color=(0,0,0))
+
         
         if self.transform:
             image = self.transform(image)
             
-        oil_labels = data['oil']
-        part_labels = data['part']
+        
             
         return image, oil_labels
     

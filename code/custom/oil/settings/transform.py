@@ -5,14 +5,14 @@ from torchvision import transforms
 # https://albumentations-demo.herokuapp.com/
 
 def getTransform():
-    train_transform = transforms.Compose([transforms.ToTensor(),
+    train_transform = transforms.Compose([transforms.ToTensor()
                             #    transforms.Resize((256,256))
                                ])
     
-    val_transform = transforms.Compose([transforms.ToTensor(),
+    val_transform = transforms.Compose([transforms.ToTensor()
                             #    transforms.Resize((256,256))
                                ])
-    
+
     return train_transform, val_transform
 
 
