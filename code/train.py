@@ -42,23 +42,19 @@ def train(args, model, train_loader, device,  criterion, optimizer):
         images = images.to(device)
         labels = labels.to(device)
         
-        outputs= model(images)
-        # outputs = outputs[0]
+        outputs = model(images)
         
-        loss = criterion(outputs, labels)
+        loss = criterion(outputs.to(torch.float32), labels.to(torch.float32))
         losses.append(loss.item())
         loss.backward()
         
         optimizer.step()
         optimizer.zero_grad()
-        
-        # if step % args.log_steps == 0:
-        #     print(f"Training steps: {step} Loss : {str(loss.item())}")
 
         if not args.regression:    
             _, preds = torch.max(outputs,1)
         else:
-            preds = torch.round(outputs)
+            preds = torch.round(outputs).squeeze().type(torch.int64)
         
         corrects += torch.sum(preds == labels.data)
         count += outputs.shape[0]
@@ -75,49 +71,51 @@ def train(args, model, train_loader, device,  criterion, optimizer):
 def valid(args, model, valid_loader, device,  criterion, optimizer):
     model.eval()
     
-    all_preds, all_labels = [], []
+    all_preds, all_labels, all_regs = [], [], []
     corrects=0
     count = 0
     losses, f1_items, recall_items, precision_items = [], [], [], []
     
     valid_pbar = tqdm(valid_loader)
-    for images,labels in valid_pbar:
-        valid_pbar.set_description('Valid')
-        images = images.to(device)
-        all_labels += list(map(lambda x : x.item(), labels))
-        labels = labels.to(device)
-        
-        outputs= model(images)
-        loss = criterion(outputs, labels)
-        losses.append(loss.item())
+    with torch.no_grad():
+        for images,labels in valid_pbar:
+            valid_pbar.set_description('Valid')
+            images = images.to(device)
+            all_labels += list(map(lambda x : x.item(), labels))
+            labels = labels.to(device)
+            
+            outputs= model(images)
+            all_regs += outputs.squeeze().tolist()
+            loss = criterion(outputs.to(torch.float32), labels.to(torch.float32))
+            losses.append(loss.item())
 
-        if not args.regression:
-            _, preds = torch.max(outputs,1)
-        else:
-            preds = torch.round(outputs)
-        
-        all_preds += (preds.cpu().detach().tolist())
-        corrects += torch.sum(preds == labels.data)
-        count += outputs.shape[0]
-        
-        ## f1 score
-        f1_item = f1_score(labels.cpu().detach().numpy(), preds.cpu().detach().numpy(), average = 'macro') # 추가 
-        f1_items.append(f1_item) 
+            if not args.regression:
+                _, preds = torch.max(outputs,1)
+            else:
+                preds = torch.round(outputs).squeeze().type(torch.int64)
+            
+            all_preds += (preds.cpu().detach().tolist())
+            corrects += torch.sum(preds == labels.data)
+            count += outputs.shape[0]
+            
+            ## f1 score
+            f1_item = f1_score(labels.cpu().detach().numpy(), preds.cpu().detach().numpy(), average = 'macro') # 추가 
+            f1_items.append(f1_item) 
 
-        ## recall
-        recall_item = recall_score(labels.cpu().detach().numpy(), preds.cpu().detach().numpy(), average = 'macro')
-        recall_items.append(recall_item)
+            ## recall
+            recall_item = recall_score(labels.cpu().detach().numpy(), preds.cpu().detach().numpy(), average = 'macro')
+            recall_items.append(recall_item)
 
-        ## precision
-        precision_item = precision_score(labels.cpu().detach().numpy(), preds.cpu().detach().numpy(), average = 'macro')
-        precision_items.append(precision_item)
+            ## precision
+            precision_item = precision_score(labels.cpu().detach().numpy(), preds.cpu().detach().numpy(), average = 'macro')
+            precision_items.append(precision_item)
 
-        valid_pbar.set_postfix({'acc': (corrects/count).item(), 
-                                'loss' : sum(losses)/len(losses),
-                                'f1' : sum(f1_items)/len(f1_items),
-                                'recall' : sum(recall_items)/len(recall_items),
-                                'precision' : sum(precision_items)/len(precision_items)
-                                })
+            valid_pbar.set_postfix({'acc': (corrects/count).item(), 
+                                    'loss' : sum(losses)/len(losses),
+                                    'f1' : sum(f1_items)/len(f1_items),
+                                    'recall' : sum(recall_items)/len(recall_items),
+                                    'precision' : sum(precision_items)/len(precision_items)
+                                    })
     
     acc = corrects / count
     val_loss = sum(losses) / len(losses)
@@ -125,7 +123,20 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
     recall = sum(recall_items) / len(recall_items)
     precision = sum(precision_items) / len(precision_items)
 
-    classes = range(5)
+    cf_matrix = confusion_matrix(all_preds, all_labels, labels = range(5))
+    df_cm = pd.DataFrame(cf_matrix, index = [i for i in range(5)], columns = [i for i in range(5)])
+    fig, ax = plt.subplots(figsize = (10,7), ncols=2)
+    g = sns.heatmap(df_cm, annot=True, cmap=sns.color_palette("ch:s=.25,rot=-.25", as_cmap=True), ax=ax[0])
+    g.set_xlabel("Actual")
+    g.set_ylabel("Predicted")
+
+    df = pd.DataFrame({'reg' : all_regs, 'lab' : all_labels })
+    df = df.sort_values(['lab', 'reg'])
+    df.reset_index(inplace=True, drop=True)
+
+    g = ax[1].plot(df.reg, label='predicted')
+    g = ax[1].plot(df.lab, label='actual')
+    g = ax[1].legend()
 
     if args.wandb:
         wandb.log({'valid/accuracy' : acc,
@@ -133,8 +144,8 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
                     'valid/F1_score' : f1,
                     'valid/recall' : recall,
                     'valid/precision' : precision,
+                    "Confusion_Matrix" : wandb.Image(g),
                     })
-        wandb.sklearn.plot_confusion_matrix(all_labels, all_preds, labels=classes)
     
     return {"accuracy": acc, 
             "loss" : loss, 

@@ -66,19 +66,12 @@ class F1Loss(nn.Module):
         f1 = f1.clamp(min=self.epsilon, max=1 - self.epsilon)
         return 1 - f1.mean()
 
-class MeanSquaredError(nn.Module):
-    def __init__(self):
-        super().__init__()
-    def forward(self, y_pred, y_true):
-        return ((y_true - y_pred) ** 2).mean() 
-
-
 _criterion_entrypoints = {
     'cross_entropy': nn.CrossEntropyLoss,
     'focal': FocalLoss,
     'label_smoothing': LabelSmoothingLoss,
     'f1': F1Loss,
-    'mse' : MeanSquaredError
+    'mse' : nn.MSELoss
 }
 
 

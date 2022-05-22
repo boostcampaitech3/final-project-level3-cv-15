@@ -13,7 +13,7 @@ def getArg():
     arg.valid_worker = 4
     
     # model
-    arg.regression = False
+    arg.regression = True
     arg.modeltype = 'timm'
     arg.modelname = 'efficientnet_b4'
     # timm : efficientnet_b4, vit_base_patch16_224
@@ -29,10 +29,10 @@ def getArg():
     
     # loss
     # pick 'mse' if regression mode
-    arg.loss = 'focal'
+    arg.loss = 'mse'
 
     arg.output_path = "../output"
-    arg.custom_name = "oil_cf_test"
+    arg.custom_name = "oil"
     arg.log_steps=20
 
     # accuracy, loss, f1_score, recall_score, precision_score
