@@ -22,7 +22,16 @@ from tensorboardX import SummaryWriter
 import torch.backends.cudnn as cudnn
 import ast
 import csv
+import random
 
+def setSeed(seed):
+	torch.manual_seed(seed)
+	torch.cuda.manual_seed(seed)
+	torch.cuda.manual_seed_all(seed) # if use multi-GPU
+	torch.backends.cudnn.deterministic = True
+	torch.backends.cudnn.benchmark = False
+	np.random.seed(seed)
+	random.seed(seed)
 
 def parse_args():
     '''
@@ -37,7 +46,7 @@ def parse_args():
         "--cfg",
         help="decide which cfg to use",
         required=False,
-        default="../configs/isic_2017.yaml",
+        default="../configs/isic_2018.yaml",
         type=str,
     )
     parser.add_argument(
@@ -63,6 +72,7 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
     update_config(cfg, args)
+    setSeed(523)
     update_cfg_name(cfg)  # modify the cfg.NAME
     logger, log_file = create_logger(cfg)
     warnings.filterwarnings("ignore")
