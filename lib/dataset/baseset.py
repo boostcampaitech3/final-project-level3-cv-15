@@ -38,6 +38,7 @@ class BaseSet(Dataset):
             self.all_info = json.load(f)
         self.num_classes = self.all_info["num_classes"]
         self.data = self.all_info["annotations"]
+        
         print("Contain {} images of {} classes".format(len(self.data), self.num_classes))
 
         if self.cfg.TRAIN.SAMPLER.TYPE == "oversample" and self.mode == "train":
@@ -63,8 +64,9 @@ class BaseSet(Dataset):
             index = random.choice(sample_indexes)
 
         now_info = self.data[index]
+        part = now_info['part']
         img = self._get_image(now_info)
-        image = self.image_transform(img, index)
+        image = self.image_transform(img, index, part)
         image_label = (
             now_info["category_id"] if "test" not in self.mode else -1
         )
@@ -80,7 +82,7 @@ class BaseSet(Dataset):
             sample_index = random.choice(sample_indexes)
             sample_info = self.data[sample_index]
             sample_img, sample_label = self._get_image(sample_info), sample_info['category_id']
-            sample_img = self.image_transform(sample_img, sample_index)
+            sample_img = self.image_transform(sample_img, sample_index, part)
             meta['sample_image'] = sample_img
             meta['sample_label'] = sample_label
 
@@ -161,18 +163,18 @@ class BaseSet(Dataset):
             normalize = extended_transforms.NormalizePerImage()
         return normalize(img)
 
-    def image_transform(self, img, index):
+    def image_transform(self, img, index, part):
         img = self.image_pre_process(img)
 
         if self.mode == "train":
-            img = self._train_transform(img, index)
+            img = self._train_transform(img, index, part)
         else:
-            img = self._val_transform(img, index)
+            img = self._val_transform(img, index, part)
 
         img = self.image_post_process(img)
         return img
 
-    def _train_transform(self, img, index):
+    def _train_transform(self, img, index, part):
         if self.cfg.TRAIN.SAMPLER.AUGMENT.NEED_AUGMENT:  # need data augmentation
             # need another image
             while True:
@@ -183,13 +185,13 @@ class BaseSet(Dataset):
             img_bg = self._get_image(bg_info)
             img_bg = self.image_pre_process(img_bg)
 
-            img = self.data_augment_train(img, img_bg)
+            img = self.data_augment_train(img, img_bg, part)
         else:
             img = self.data_transforms_train(img)
 
         return img
 
-    def data_augment_train(self, img, img_bg):
+    def data_augment_train(self, img, img_bg, part):
         img = torch.from_numpy(np.array(img, dtype=np.uint8))
         img_bg = torch.from_numpy(np.array(img_bg, dtype=np.uint8))
         blank_replace = tuple([i * 255.0 for i in self.cfg.TRAIN.SAMPLER.FIX_MEAN_VAR.SET_MEAN])
@@ -206,17 +208,19 @@ class BaseSet(Dataset):
 
         # --- random crop ---
         img = Image.fromarray(img.numpy())
-        # transforms.RandomCrop(self.input_size),
-        # crop_method = extended_transforms.RandomCropInRate(nsize=self.input_size,
-        #                                                    rand_rate=(self.cfg.TRAIN.SAMPLER.MULTI_CROP.L_REGION,
-        #                                                               self.cfg.TRAIN.SAMPLER.MULTI_CROP.S_REGION))
-        # crop_method = transforms.Resize((224,224))
-        crop_method = transforms.CenterCrop(self.input_size)
-        img = crop_method(img)
-        
-        # val_transform = transforms.Compose([transforms.ToTensor(),
-        #                        transforms.Resize((512,512))])
-        # img.save("/opt/ml/oilimages/" +str(img) + '.jpg')
+        if part == 0: 
+            img = transforms.CenterCrop((1024,1024))(img)
+            img = extended_transforms.RandomCropInRate(nsize=(800,800),rand_rate=(1.0,1.0))(img)
+        elif part == 1:
+            img = transforms.CenterCrop((1024,1024))(img)
+            img = extended_transforms.RandomCropInRate(nsize=(750,750),rand_rate=(1.0,1.0))(img)
+        elif part == 2:
+            img = transforms.RandomCrop((500,500), padding=True, pad_if_needed=True, fill=0, padding_mode='constant')(img)
+        elif part == 3:
+            img = transforms.RandomCrop((500,500), padding=True, pad_if_needed=True, fill=0, padding_mode='constant')(img)
+
+        img = transforms.Resize((224,224))(img)
+        # img.save("/opt/ml/sensitiveimages/" +str(img) + '.jpg')
         return img
 
     def data_transforms_train(self, img):
@@ -240,11 +244,20 @@ class BaseSet(Dataset):
         # img.show()
         return img
 
-    def _val_transform(self, img, index):
+    def _val_transform(self, img, index, part):
         if self.val_sample_repeat_num == 0:     # simple center crop
-            crop_method = transforms.CenterCrop(self.input_size)
-            # crop_method = transforms.Resize((224,224))
-            img = crop_method(img)
+            if part == 0: 
+                img = transforms.CenterCrop((1024,1024))(img)
+                img = extended_transforms.RandomCropInRate(nsize=(800,800),rand_rate=(1.0,1.0))(img)
+            elif part == 1:
+                img = transforms.CenterCrop((1024,1024))(img)
+                img = extended_transforms.RandomCropInRate(nsize=(750,750),rand_rate=(1.0,1.0))(img)
+            elif part == 2:
+                img = transforms.RandomCrop((500,500), padding=True, pad_if_needed=True, fill=0, padding_mode='constant')(img)
+            elif part == 3:
+                img = transforms.RandomCrop((500,500), padding=True, pad_if_needed=True, fill=0, padding_mode='constant')(img)
+
+            img = transforms.Resize((224,224))(img)
         else:
             idx = index % self.val_sample_repeat_num
             if self.cfg.TRAIN.SAMPLER.MULTI_CROP.ENABLE and idx < self.cfg.TRAIN.SAMPLER.MULTI_CROP.CROP_NUM:   # multi crop
@@ -253,7 +266,7 @@ class BaseSet(Dataset):
                 if self.cfg.TRAIN.SAMPLER.MULTI_CROP.ENABLE:
                     idx -= self.cfg.TRAIN.SAMPLER.MULTI_CROP.CROP_NUM
                 img = self._val_multi_scale(img, idx)
-        # img.save("/opt/ml/oilvalidimages/" +str(img) + '.jpg')
+        # img.save("/opt/ml/sensitivevalimages/" +str(img) + '.jpg')
         return img
 
     def _val_multi_crop(self, img, idx):
