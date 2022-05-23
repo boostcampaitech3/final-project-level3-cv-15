@@ -9,7 +9,8 @@ from tqdm import tqdm
 # from utils.train_method import train
 from utils.set_seed import setSeed
 
-from sklearn.metrics import f1_score, recall_score, precision_score
+from sklearn.metrics import f1_score, recall_score, precision_score, confusion_matrix
+import pandas as pd
 
 import numpy as np
 import wandb
@@ -127,7 +128,13 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
                                     'precision' : sum(precision_items)/len(precision_items)
                                     })
         
-    
+    cf_matrix = confusion_matrix(all_preds, all_labels, labels = range(5))
+    df_cm = pd.DataFrame(cf_matrix/np.sum(cf_matrix), index = [i for i in range(5)], columns = [i for i in range(5)])
+    fig, ax = plt.subplots(figsize = (10,7))
+    g = sns.heatmap(df_cm, annot=True, cmap=sns.color_palette("ch:s=.25,rot=-.25", as_cmap=True), ax=ax)
+    g.set_xlabel("Actual")
+    g.set_ylabel("Predicted")
+
     acc = corrects / count
     val_loss = sum(losses) / len(losses)
     f1 = sum(f1_items) / len(f1_items) #추가
@@ -139,8 +146,8 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
                     'valid/loss' : val_loss,
                     'valid/F1_score' : f1,
                     'valid/recall' : recall,
-                    'valid/precision' : precision})
-        wandb.sklearn.plot_confusion_matrix(all_labels, all_preds, labels=range(5))
+                    'valid/precision' : precision,
+                    'Confusion_Matrix' : wandb.Image(g)})
     
     return {"accuracy": acc, 
             "loss" : loss, 
