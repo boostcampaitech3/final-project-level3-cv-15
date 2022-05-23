@@ -18,11 +18,13 @@ from torch.utils.data import DataLoader
 import argparse
 import warnings
 import click
-from tensorboardX import SummaryWriter
+# from tensorboardX import SummaryWriter
 import torch.backends.cudnn as cudnn
 import ast
 import csv
 import random
+
+import wandb
 
 def setSeed(seed):
 	torch.manual_seed(seed)
@@ -132,11 +134,11 @@ if __name__ == "__main__":
 
     model_dir = os.path.join(cfg.OUTPUT_DIR, cfg.NAME, "models")
     code_dir = os.path.join(cfg.OUTPUT_DIR, cfg.NAME, "codes")
-    tensorboard_dir = (
-        os.path.join(cfg.OUTPUT_DIR, cfg.NAME, "tensorboard")
-        if cfg.TRAIN.TENSORBOARD.ENABLE
-        else None
-    )
+    # tensorboard_dir = (
+    #     os.path.join(cfg.OUTPUT_DIR, cfg.NAME, "tensorboard")
+    #     if cfg.TRAIN.TENSORBOARD.ENABLE
+    #     else None
+    # )
 
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
@@ -150,8 +152,8 @@ if __name__ == "__main__":
         ):
             exit(0)
         shutil.rmtree(code_dir)
-        if tensorboard_dir is not None and os.path.exists(tensorboard_dir):
-            shutil.rmtree(tensorboard_dir)
+        # if tensorboard_dir is not None and os.path.exists(tensorboard_dir):
+        #     shutil.rmtree(tensorboard_dir)
     print("=> output model will be saved in {}".format(model_dir))
     this_dir = os.path.dirname(__file__)
     ignore = shutil.ignore_patterns(
@@ -160,12 +162,12 @@ if __name__ == "__main__":
     )
     shutil.copytree(os.path.join(this_dir, ".."), code_dir, ignore=ignore)
 
-    if tensorboard_dir is not None:
-        dummy_input = torch.rand((1, 3) + cfg.INPUT_SIZE).to(device)
-        writer = SummaryWriter(log_dir=tensorboard_dir)
-        writer.add_graph(model if cfg.CPU_MODE else model.module, (dummy_input,))
-    else:
-        writer = None
+    # if tensorboard_dir is not None:
+    #     dummy_input = torch.rand((1, 3) + cfg.INPUT_SIZE).to(device)
+    #     writer = SummaryWriter(log_dir=tensorboard_dir)
+    #     writer.add_graph(model if cfg.CPU_MODE else model.module, (dummy_input,))
+    # else:
+    #     writer = None
 
     best_result, best_epoch, start_epoch = 0, 0, 1
     best_metrics = {}
@@ -205,18 +207,22 @@ if __name__ == "__main__":
         str(cfg.TRAIN.SAMPLER.AUGMENT.NEED_AUGMENT))
     )
 
+    wandb.init(project='XAI_MWNL', entity='boostcampaitech3', name=cfg.NAME)
+
     for epoch in range(start_epoch, max_epoch + 1):
         scheduler.step()
         train_acc, train_loss = train_model(
             trainLoader, epoch, max_epoch, optimizer,
-            combiner, cfg, logger, writer=writer
+            combiner, cfg, logger#, writer=writer
         )
 
         loss_dict, acc_dict = {"train_loss": train_loss}, {"train_acc": train_acc}
+        # wandb.log({"train/acc": acc_dict, "train/loss", loss_dict})
+
         if cfg.VALID_STEP != -1 and epoch % cfg.VALID_STEP == 0:
             val_metrics = valid_model(
                 validLoader, epoch, combiner, cfg,
-                logger, writer=writer
+                logger#, writer=writer
             )
             loss_dict["valid_loss"], acc_dict["valid_acc"] = val_metrics["loss"], val_metrics["acc"]
 
@@ -252,11 +258,12 @@ if __name__ == "__main__":
                 'optimizer': optimizer.state_dict()
             }, model_save_path)
 
-        if cfg.TRAIN.TENSORBOARD.ENABLE:
-            writer.add_scalars("scalar/acc", acc_dict, epoch)
-            writer.add_scalars("scalar/loss", loss_dict, epoch)
-    if cfg.TRAIN.TENSORBOARD.ENABLE:
-        writer.close()
+        
+    #     if cfg.TRAIN.TENSORBOARD.ENABLE:
+    #         writer.add_scalars("scalar/acc", acc_dict, epoch)
+    #         writer.add_scalars("scalar/loss", loss_dict, epoch)
+    # if cfg.TRAIN.TENSORBOARD.ENABLE:
+    #     writer.close()
     logger.info(
         "------------------- Train Finished :{} -------------------\n\n".format(cfg.NAME)
     )

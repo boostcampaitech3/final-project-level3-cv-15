@@ -4,6 +4,7 @@ import torch
 from torch.nn import functional as F
 import time
 from sklearn.metrics import auc, roc_curve
+import wandb
 
 
 def train_model(
@@ -35,6 +36,10 @@ def train_model(
     pbar_str = "---Epoch:{:>3d}/{}   l_rate:{:>9.7f}   Avg_Loss:{:>6.4f}   Epoch_Acc:{:>6.3f}%   Epoch_Time:{:>5.2f}min---".format(
         epoch, epoch_number, optimizer.param_groups[0]['lr'], all_loss.avg, acc.avg * 100, (end_time - start_time) / 60
     )
+    wandb.log({'lr':optimizer.param_groups[0]['lr'],
+                'train/avg_loss': all_loss.avg,
+                'train/acc': acc.avg * 100})
+
     logger.info(pbar_str)
     return acc.avg, all_loss.avg
 
@@ -98,6 +103,11 @@ def valid_model(
     logger.info("         sensitivity:   {}  ".format(metrics["sensitivity"]))
     logger.info("         specificity:   {}   mean:   {}  ".format(metrics["specificity"], spec_mean))
     logger.info("         fusion_matrix: \n{}  ".format(metrics["fusion_matrix"]))
+
+    wandb.log({'valid/loss': metrics["loss"],
+                'valid/Acc': metrics["acc"] * 100,
+                'valid/f1': metrics["f1_score"],
+                'valid/BACC': metrics["bacc"] * 100})
 
     return metrics
 
