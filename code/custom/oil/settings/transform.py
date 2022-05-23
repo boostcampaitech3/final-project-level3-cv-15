@@ -6,10 +6,12 @@ from torchvision import transforms
 
 def getTransform():
     train_transform = transforms.Compose([transforms.ToTensor(),
-                               transforms.Resize((256,256))])
+                               transforms.Resize((256,256)),])
+                            #    transforms.Normalize(mean = [0.6580, 0.5347, 0.4624], std = [0.1837, 0.1616, 0.1509])])
     
     val_transform = transforms.Compose([transforms.ToTensor(),
-                               transforms.Resize((256,256))])
+                               transforms.Resize((256,256)),])
+                            #    transforms.Normalize(mean = [0.6580, 0.5347, 0.4624], std = [0.1837, 0.1616, 0.1509])])
     
     return train_transform, val_transform
 
