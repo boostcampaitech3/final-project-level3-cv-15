@@ -27,13 +27,13 @@ class OiltrainDataset(Dataset):
         image = cv2.imread(img_path)
         image = A.Resize(always_apply=False, p=1.0, height=500, width=700, interpolation=0)(image = image)
         image = image["image"]
-        if int(part_labels) == 1:
-            image = cv2.rectangle(image, (0,0), (700,120), (0,0,0),-1)
-            image = cv2.rectangle(image, (0,400), (700,500), (0,0,0),-1)
-            polly1 = np.array([[200,100],[0,100],[0,400]])
-            polly2 = np.array([[500,100],[700,100],[700,400]])
-            image = cv2.fillPoly(image,[polly1],color=(0,0,0))
-            image = cv2.fillPoly(image,[polly2],color=(0,0,0))
+        # if int(part_labels) == 1:
+        #     image = cv2.rectangle(image, (0,0), (700,120), (0,0,0),-1)
+        #     image = cv2.rectangle(image, (0,400), (700,500), (0,0,0),-1)
+        #     polly1 = np.array([[200,100],[0,100],[0,400]])
+        #     polly2 = np.array([[500,100],[700,100],[700,400]])
+        #     image = cv2.fillPoly(image,[polly1],color=(0,0,0))
+        #     image = cv2.fillPoly(image,[polly2],color=(0,0,0))
 
         if self.transform:
             image = self.transform(image)

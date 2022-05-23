@@ -14,23 +14,21 @@ from sklearn.metrics import f1_score, recall_score, precision_score
 import numpy as np
 import wandb
 import warnings
-import gc
 
 warnings.filterwarnings('ignore')
 
 def getArgument():
     # Custom 폴더 내 훈련 설정 목록을 선택
-    # test
     parser = argparse.ArgumentParser()
     parser.add_argument('--dir',type=str ,required=True)
     parser.add_argument('--arg_n',type=str ,required=True)
-    parser.add_argument('--lr',type=str ,required=False)
-    parser.add_argument('--optimizer',type=str ,required=False)
-    parser.add_argument('--loss',type=str ,required=False)
-    parser.add_argument('--scheduler',type=str ,required=False)
-    parser.add_argument('--batch',type=str ,required=False)
-    parser.add_argument('--seed',type=str ,required=False)
-    parser.add_argument('--modeltype',type=str ,required=False)
+    parser.add_argument('--lr',type=str ,required=False)	
+    parser.add_argument('--optimizer',type=str ,required=False)	
+    parser.add_argument('--loss',type=str ,required=False)	
+    parser.add_argument('--scheduler',type=str ,required=False)	
+    parser.add_argument('--batch',type=str ,required=False)	
+    parser.add_argument('--seed',type=str ,required=False)	
+    parser.add_argument('--modeltype',type=str ,required=False)	
     parser.add_argument('--modelname',type=str ,required=False)
     
     return parser.parse_known_args()[0].dir, \
@@ -42,8 +40,7 @@ def getArgument():
     parser.parse_known_args()[0].seed,\
     parser.parse_known_args()[0].batch,\
     parser.parse_known_args()[0].modeltype,\
-    parser.parse_known_args()[0].modelname,\
-
+    parser.parse_known_args()[0].modelname,
 
 def train(args, model, train_loader, device,  criterion, optimizer):
     
@@ -89,6 +86,7 @@ def train(args, model, train_loader, device,  criterion, optimizer):
 def valid(args, model, valid_loader, device,  criterion, optimizer):
     model.eval()
     
+    all_labels, all_preds = [], []
     corrects=0
     count = 0
     losses, f1_items, recall_items, precision_items = [], [], [], []
@@ -98,6 +96,7 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
         for images,labels in valid_pbar:
             valid_pbar.set_description('Valid')
             images = images.to(device)
+            all_labels += list(map(lambda x : x.item(), labels))
             labels = labels.to(device)
             
             outputs= model(images)
@@ -107,6 +106,7 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
             _, preds = torch.max(outputs,1)
             corrects += torch.sum(preds == labels.data)
             count += outputs.shape[0]
+            all_preds += (preds.cpu().detach().tolist())
             
             ## f1 score
             f1_item = f1_score(labels.cpu(), preds.cpu(), average = 'macro') # 추가 
@@ -126,7 +126,7 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
                                     'recall' : sum(recall_items)/len(recall_items),
                                     'precision' : sum(precision_items)/len(precision_items)
                                     })
-    
+        
     
     acc = corrects / count
     val_loss = sum(losses) / len(losses)
@@ -140,6 +140,7 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
                     'valid/F1_score' : f1,
                     'valid/recall' : recall,
                     'valid/precision' : precision})
+        wandb.sklearn.plot_confusion_matrix(all_labels, all_preds, labels=range(5))
     
     return {"accuracy": acc, 
             "loss" : loss, 
@@ -148,26 +149,27 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
             "precision" : precision, 
             }
 
+		
 def main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _modeltype, _modelname):
 
-    arg = getattr(import_module(f"custom.{custom_dir}.settings.{arg_n}"), "getArg")()
-    if _lr:
-        arg.lr = float(_lr)
-    if _optimizer:
-        arg.optimizer = _optimizer
-    if _loss:
-        arg.loss = _loss
-    if _scheduler:
-        arg.scheduler = _scheduler
-    if _seed:
-        arg.seed = int(_seed)
-    if _batch:
-        arg.batch = int(batch)
-    if _modeltype:
-        arg.modeltype = _modeltype
-    if _modelname:
-        arg.modelname = _modelname
-    # custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _modeltype,_modelname
+    arg = getattr(import_module(f"custom.{custom_dir}.settings.{arg_n}"), "getArg")()	
+    if _lr:	
+        arg.lr = float(_lr)	
+    if _optimizer:	
+        arg.optimizer = _optimizer	
+    if _loss:	
+        arg.loss = _loss	
+    if _scheduler:	
+        arg.scheduler = _scheduler	
+    if _seed:	
+        arg.seed = int(_seed)	
+    if _batch:	
+        arg.batch = int(batch)	
+    if _modeltype:	
+        arg.modeltype = _modeltype	
+    if _modelname:	
+        arg.modelname = _modelname	
+    # custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _modeltype,_modelname	
     print(arg)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -186,13 +188,13 @@ def main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _
 
     outputPath = os.path.join(arg.output_path, arg.custom_name)
 
-    # 동일한 파일명이 있다면 알아서 변경해준다.
-    unique = 1
-    if os.path.exists(outputPath):
-        while os.path.exists(outputPath + str(unique)):
-            unique += 1
-        outputPath = outputPath + str(unique)
-    
+    # change outputPath if outputPath already exists 
+    unique = 1	
+    if os.path.exists(outputPath):	
+        while os.path.exists(outputPath + str(unique)):	
+            unique += 1	
+        outputPath = outputPath + str(unique)	
+    	
     arg.custom_name = outputPath.split("/")[-1]
 
     #output Path 내 설정 저장
@@ -201,7 +203,7 @@ def main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _
     
     # wandb
     if arg.wandb:
-            wandb.init(project=arg.wandb_project, entity=arg.wandb_entity, name = arg.custom_name, config=arg)
+            wandb.init(project=arg.wandb_project, entity=arg.wandb_entity, name = arg.custom_name, config = arg)
             wandb.watch(model)
             wandb.run.summary['metric'] = arg.metric
             wandb.run.summary['optimizer'] = arg.optimizer
@@ -216,7 +218,6 @@ def main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _
         print(f'Epoch {epoch+1}/{arg.epoch}')
         
         train_acc = train(arg, model, trainLoader, device, criterion, optimizer)
-        gc.collect()
 
         metrics = valid(arg, model, valLoader,device, criterion, optimizer)
         goal_metric = metrics[arg.metric]
@@ -227,7 +228,7 @@ def main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _
             if arg.wandb:
                 wandb.run.summary['Best_metric'] = best_metric
             try:
-                os.remove(os.path.join(outputPath+"/models", save_name))
+                os.remove(os.path.join(outputPath+"/models", save_name+'.pt'))
             except:
                 pass
             save_name = f"{arg.custom_name}_best_{str(best_metric.item())[:4]}"
@@ -240,5 +241,5 @@ def main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _
             scheduler.step()
 
 if __name__=="__main__":
-    custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _modeltype,_modelname = getArgument()
+    custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _modeltype,_modelname = getArgument()	
     main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _modeltype,_modelname)
