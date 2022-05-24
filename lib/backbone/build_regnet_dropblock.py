@@ -63,11 +63,11 @@ def RegNetY_1_6_GF_DropBlock(num_classes=1000, pretrained='imagenet'):
 
 
 def RegNetY_3_2_GF_DropBlock(num_classes=1000, pretrained='imagenet'):
-    f = open('/opt/ml/mbit-skin-cancer-1/lib/backbone/regnet_yaml/RegNetY-3.2GF_dds_8gpu.yaml')
+    f = open('/opt/ml/mbit-skin-cancer/lib/backbone/regnet_yaml/RegNetY-3.2GF_dds_8gpu.yaml')
     config = yaml.load(f, Loader=yaml.FullLoader)
     model = RegNet_DropBlock(config)
     # print(model)
-    last_checkpoint = '/opt/ml/mbit-skin-cancer-1/pretrained_models/RegNetY-3.2GF_dds_8gpu.pyth'
+    last_checkpoint = '/opt/ml/mbit-skin-cancer/pretrained_models/RegNetY-3.2GF_dds_8gpu.pyth'
     err_str = "Checkpoint '{}' not found"
     assert os.path.exists(last_checkpoint), err_str.format(last_checkpoint)
     checkpoint = torch.load(last_checkpoint, map_location="cpu")

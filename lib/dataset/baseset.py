@@ -241,21 +241,22 @@ class BaseSet(Dataset):
             # Color distortion
             color_distort = transforms.ColorJitter(brightness=32. / 255., saturation=0.5)
             img = color_distort(img)
+        img.save("/opt/ml/images/" +str(img) + '.jpg')
         # img.show()
         return img
 
     def _val_transform(self, img, index, part):
         if self.val_sample_repeat_num == 0:     # simple center crop
-            if part == 0: 
-                img = transforms.CenterCrop((1024,1024))(img)
-                img = extended_transforms.RandomCropInRate(nsize=(800,800),rand_rate=(1.0,1.0))(img)
-            elif part == 1:
-                img = transforms.CenterCrop((1024,1024))(img)
-                img = extended_transforms.RandomCropInRate(nsize=(750,750),rand_rate=(1.0,1.0))(img)
-            elif part == 2:
-                img = transforms.RandomCrop((500,500), padding=True, pad_if_needed=True, fill=0, padding_mode='constant')(img)
-            elif part == 3:
-                img = transforms.RandomCrop((500,500), padding=True, pad_if_needed=True, fill=0, padding_mode='constant')(img)
+            # if part == 0: 
+            #     img = transforms.CenterCrop((1024,1024))(img)
+            #     img = extended_transforms.RandomCropInRate(nsize=(800,800),rand_rate=(1.0,1.0))(img)
+            # elif part == 1:
+            #     img = transforms.CenterCrop((1024,1024))(img)
+            #     img = extended_transforms.RandomCropInRate(nsize=(750,750),rand_rate=(1.0,1.0))(img)
+            # elif part == 2:
+            #     img = transforms.RandomCrop((500,500), padding=True, pad_if_needed=True, fill=0, padding_mode='constant')(img)
+            # elif part == 3:
+            #     img = transforms.RandomCrop((500,500), padding=True, pad_if_needed=True, fill=0, padding_mode='constant')(img)
 
             img = transforms.Resize((224,224))(img)
         else:
@@ -266,7 +267,7 @@ class BaseSet(Dataset):
                 if self.cfg.TRAIN.SAMPLER.MULTI_CROP.ENABLE:
                     idx -= self.cfg.TRAIN.SAMPLER.MULTI_CROP.CROP_NUM
                 img = self._val_multi_scale(img, idx)
-        # img.save("/opt/ml/sensitivevalimages/" +str(img) + '.jpg')
+        img.save("/opt/ml/valimages/" +str(img) + '.jpg')
         return img
 
     def _val_multi_crop(self, img, idx):

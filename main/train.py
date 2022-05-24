@@ -75,7 +75,7 @@ if __name__ == "__main__":
     args = parse_args()
     update_config(cfg, args)
     setSeed(523)
-    update_cfg_name(cfg)  # modify the cfg.NAME
+    # update_cfg_name(cfg)  # modify the cfg.NAME
     logger, log_file = create_logger(cfg)
     warnings.filterwarnings("ignore")
     cudnn.benchmark = True
@@ -246,17 +246,17 @@ if __name__ == "__main__":
                 )
             )
 
-        model_save_path = os.path.join(model_dir, "epoch_{}.pth".format(epoch))
-        if epoch % cfg.SAVE_STEP == 0:
-            torch.save({
-                'state_dict': model.state_dict(),
-                'epoch': epoch,
-                'best_result': best_result,
-                'best_epoch': best_epoch,
-                'best_metrics': best_metrics,
-                'scheduler': scheduler.state_dict(),
-                'optimizer': optimizer.state_dict()
-            }, model_save_path)
+        # model_save_path = os.path.join(model_dir, "epoch_{}.pth".format(epoch))
+        # if epoch % cfg.SAVE_STEP == 0:
+            # torch.save({
+            #     'state_dict': model.state_dict(),
+            #     'epoch': epoch,
+            #     'best_result': best_result,
+            #     'best_epoch': best_epoch,
+            #     'best_metrics': best_metrics,
+            #     'scheduler': scheduler.state_dict(),
+            #     'optimizer': optimizer.state_dict()
+            # }, model_save_path)
 
         
     #     if cfg.TRAIN.TENSORBOARD.ENABLE:
