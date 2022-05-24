@@ -11,6 +11,10 @@ from utils.set_seed import setSeed
 
 from sklearn.metrics import f1_score, recall_score, precision_score, confusion_matrix, balanced_accuracy_score
 
+from pytorch_grad_cam import GradCAM
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+from pytorch_grad_cam.utils.image import show_cam_on_image
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -76,6 +80,7 @@ def train(args, model, train_loader, device,  criterion, optimizer):
             preds = torch.round(outputs).squeeze().type(torch.int64)
         
         all_preds += (preds.cpu().detach().tolist())
+        all_preds = list(map(lambda x : 0 if x < 0 else (4 if x > 4 else x), all_preds))
         corrects += torch.sum(preds == labels.data)
         count += outputs.shape[0]
 
@@ -109,12 +114,15 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
             labels = labels.to(device)
             
             outputs= model(images)
-            
-            all_regs += outputs.squeeze().tolist()
-
+            if len(outputs) == 1:
+                all_regs.append(outputs.squeeze().tolist())
+            else:
+                all_regs += outputs.squeeze().tolist()
 
             if args.regression:
                 outputs = outputs.squeeze().to(torch.float32)
+                if outputs.dim() == 0:
+                    outputs = outputs.unsqueeze(dim=0)
                 labels = labels.to(torch.float32)
                 loss = criterion(outputs, labels, args.loss_weight)
             else:
@@ -130,8 +138,11 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
 
             else:
                 preds = torch.round(outputs).squeeze().type(torch.int64)
+                if preds.dim() == 0:
+                    preds = preds.unsqueeze(dim=0)
 
             all_preds += (preds.cpu().detach().tolist())
+            all_preds = list(map(lambda x : 0 if x < 0 else (4 if x > 4 else x), all_preds))
             corrects += torch.sum(preds == labels.data)
             count += outputs.shape[0]
             
@@ -174,7 +185,6 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
         g.set_xlabel("Actual")
         g.set_ylabel("Predicted")
 
-
         df = pd.DataFrame({'reg' : all_regs, 'lab' : all_labels })
         df = df.sort_values(['lab', 'reg'])
         df.reset_index(inplace=True, drop=True)
@@ -188,6 +198,30 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
         g.set_xlabel("Actual")
         g.set_ylabel("Predicted")
 
+    cam = GradCAM(model = model, target_layers = model.model.blocks[-1], use_cuda = True)
+    fig1, ax1 = plt.subplots(ncols=4, nrows=2, figsize=(28,14))
+    for images, labels in valid_loader:
+        for i in range(4):
+            img_index = args.batch//4 * i
+            if not args.regression:
+                targets = [ClassifierOutputTarget(all_preds[img_index])]
+            else:
+                targets = [ClassifierOutputTarget(0)]
+            grayscale_cam = cam(input_tensor = images[img_index].unsqueeze(0), targets = targets)
+            grayscale_cam = grayscale_cam[0]
+            visualization = show_cam_on_image(images[img_index].permute(1, 2, 0).detach().cpu().numpy(), grayscale_cam, use_rgb = True)
+            
+            row = i //2
+            col = (i % 2) * 2
+
+            ax1[row][col].imshow(images[img_index].permute(1, 2, 0).detach().cpu().numpy())
+            ax1[row][col].set_title(f" Actual : {all_labels[img_index]}")
+            ax1[row][col].axis(False)
+
+            ax1[row][col+1].imshow(visualization)
+            ax1[row][col+1].set_title(f"predicted : {all_preds[img_index]}")
+            ax1[row][col+1].axis(False)
+        break
 
     if args.wandb:
         wandb.log({'valid/accuracy' : acc,
@@ -198,6 +232,7 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
                     'valid/precision' : precision,
                     'valid/bacc' : bacc,
                     "Confusion_Matrix" : wandb.Image(g),
+                    "GradCAM" : wandb.Image(fig1)
                     })
 
     return {"accuracy": acc,
@@ -224,6 +259,7 @@ def main(custom_dir, arg_n):
         model = getattr(import_module(f"custom.{custom_dir}.settings.model"), "getModel")(arg.modeltype, device, arg.modelname)
     else:
         model = getattr(import_module(f"custom.{custom_dir}.settings.model"), "getRegressionModel")(arg.modeltype, device, arg.modelname)
+
     criterion = getattr(import_module(f"custom.{custom_dir}.settings.loss"), "getLoss")(arg.loss)
     
     optimizer = getattr(import_module(f"custom.{custom_dir}.settings.optimizer"), "getOptimizer")(model, arg.optimizer, arg.lr)
