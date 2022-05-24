@@ -12,10 +12,24 @@ class Timm(nn.Module):
     def __init__(self, class_n=5 , model_n='efficientnet_b4'):
         super().__init__()
         self.model = timm.create_model(model_n, pretrained=True, num_classes=class_n)
-        # self.dropout = nn.Dropout(0.6)
+        in_ch = self.model.classifier.in_features
+        self.model.classifier = nn.Identity()
+
+        self.fc1 = nn.Linear(in_ch, in_ch//2)
+        self.bn1 = nn.BatchNorm1d(in_ch//2)
+        self.fc2 = nn.Linear(in_ch//2, in_ch//4)
+        self.bn2 = nn.BatchNorm1d(in_ch//4)
+        self.fc3 = nn.Linear(in_ch//4, class_n)
+
+        self.act = nn.ReLU()
+        self.dropout = nn.Dropout(0.5)
         
     def forward(self, x):
         x = self.model(x)
+        x = self.dropout(self.act(self.bn1(self.fc1(x))))
+        x = self.dropout(self.act(self.bn2(self.fc2(x))))
+        x = self.fc3(x)
+        
         return x
 
 class EfficientNet_b4(nn.Module):

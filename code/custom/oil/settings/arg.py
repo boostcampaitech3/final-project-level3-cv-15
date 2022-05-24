@@ -14,7 +14,8 @@ def getArg():
     arg.weight = [1, 1, 1, 1, 1]
     
     # model
-    arg.regression = True
+    arg.regression = False
+    arg.ordinalclassification = True
     arg.modeltype = 'timm'
     arg.modelname = 'efficientnet_b4'
     # timm : efficientnet_b4, vit_base_patch16_224
@@ -25,16 +26,21 @@ def getArg():
     arg.optimizer = 'adam'
     
     # scheduler
-    arg.scheduler ='steplr'
+    arg.scheduler ='cos'
     arg.step = 20
     
+    #transform
+    arg.resize = 380
+
     # loss
     # pick 'mse' if regression mode
-    arg.loss = 'mae'
-    arg.loss_weight = [1, 1, 1, 1, 1]
+
+    arg.loss = 'cross_entropy'
 
     arg.output_path = "../output"
-    arg.custom_name = "oil_reg_mae"
+    arg.custom_name = "oil_L2_classification"
+    arg.loss_weight = [1, 1, 1, 1, 1]
+
     arg.log_steps=20
 
     # accuracy, loss, f1_score, recall_score, precision_score, balanced_accuracy
