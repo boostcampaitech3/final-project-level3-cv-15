@@ -4,13 +4,14 @@ def getArg():
     arg = eDict()
     
     # settings
-    arg.epoch = 30
+    arg.epoch = 20
     arg.seed = 42
     
     # dataloader
     arg.batch = 16
     arg.train_worker = 4
     arg.valid_worker = 4
+    arg.weight = [1, 1, 1, 1, 1]
     
     # model
     arg.regression = False
@@ -33,13 +34,16 @@ def getArg():
 
     # loss
     # pick 'mse' if regression mode
+
     arg.loss = 'cross_entropy'
 
     arg.output_path = "../output"
     arg.custom_name = "oil_L2_classification"
+    arg.loss_weight = [1, 1, 1, 1, 1]
+
     arg.log_steps=20
 
-    # accuracy, loss, f1_score, recall_score, precision_score
+    # accuracy, loss, f1_score, recall_score, precision_score, balanced_accuracy
     arg.metric = "accuracy" 
 
     arg.wandb = True
