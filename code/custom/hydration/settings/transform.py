@@ -11,6 +11,7 @@ def getTransform(arg):
     
     val_transform = transforms.Compose([transforms.ToTensor(),
                                transforms.Resize((input_size,input_size))])
+
     
     return train_transform, val_transform
 

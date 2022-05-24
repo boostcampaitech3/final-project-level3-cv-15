@@ -107,7 +107,7 @@ _criterion_entrypoints = {
     'label_smoothing': LabelSmoothingLoss,
     'f1': F1Loss,
     'smoothL1' :nn.SmoothL1Loss,
-    'ordinal' : ordinal
+    'ordinal' : ordinal,
     'mse' : MeanSquaredError,
     'mae' : MeanAbsoluteError
 }

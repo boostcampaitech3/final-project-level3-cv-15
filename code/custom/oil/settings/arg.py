@@ -26,7 +26,7 @@ def getArg():
     arg.optimizer = 'adam'
     
     # scheduler
-    arg.scheduler ='cos'
+    arg.scheduler ='steplr'
     arg.step = 20
     
     #transform
@@ -35,7 +35,7 @@ def getArg():
     # loss
     # pick 'mse' if regression mode
 
-    arg.loss = 'cross_entropy'
+    arg.loss = 'ordinal'
 
     arg.output_path = "../output"
     arg.custom_name = "oil_L2_classification"
@@ -46,7 +46,7 @@ def getArg():
     # accuracy, loss, f1_score, recall_score, precision_score, balanced_accuracy
     arg.metric = "accuracy" 
 
-    arg.wandb = True
+    arg.wandb = False
     arg.wandb_project = "XAI project"
     arg.wandb_entity = "boostcampaitech3"
 

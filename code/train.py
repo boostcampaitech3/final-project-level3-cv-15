@@ -151,7 +151,6 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
             valid_pbar.set_postfix({'acc': (corrects/count).item(),
                                     'bacc' : balanced_accuracy_score(all_labels, all_preds),
                                     'loss' : sum(losses)/len(losses),
-                                    'bacc' : sum(bacc_items)/len(bacc_items),
                                     'f1' : sum(f1_items)/len(f1_items),
                                     'recall' : sum(recall_items)/len(recall_items),
                                     'precision' : sum(precision_items)/len(precision_items)
@@ -231,6 +230,16 @@ def main(custom_dir, arg_n):
     scheduler = getattr(import_module(f"custom.{custom_dir}.settings.scheduler"), "getScheduler")(optimizer, arg.scheduler, arg.epoch)
 
     outputPath = os.path.join(arg.output_path, arg.custom_name)
+
+    # change outputPath if outputPath already exists 
+    unique = 1	
+    if os.path.exists(outputPath):
+        while os.path.exists(outputPath + str(unique)):
+            unique += 1
+        outputPath = outputPath + str(unique)
+    
+    arg.custom_name = outputPath.split("/")[-1]
+
 
     #output Path 내 설정 저장
     shutil.copytree(f"custom/{custom_dir}",outputPath)
