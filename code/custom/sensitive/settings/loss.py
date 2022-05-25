@@ -72,7 +72,7 @@ class ordinal(nn.Module):
     def __init__(self):
         super().__init__()
     
-    def forward(self, predictions, targets):
+    def forward(self, predictions, targets, weight):
         """Ordinal regression with encoding as in https://arxiv.org/pdf/0704.1028.pdf"""
 
         # Create out modified target with [batch_size, num_labels] shape
@@ -83,14 +83,19 @@ class ordinal(nn.Module):
             target = int(target.item())
             modified_target[i, 0:target+1] = 1
 
-        return nn.MSELoss(reduction='none')(predictions, modified_target).sum(axis=1).mean()
+        targets = targets.detach().cpu().numpy().tolist()
+        return MeanSquaredError()(predictions, modified_target, weight, targets)
 
 
 class MeanSquaredError(nn.Module):
     def __init__(self):
         super().__init__()
-    def forward(self, y_pred, y_true, weight):
-        weights = torch.tensor(list(map(lambda x : weight[int(x)], y_true))).to('cuda')
+    def forward(self, y_pred, y_true, weight, real_true = None):
+        if real_true:
+            weights = torch.tensor(list(map(lambda x : weight[int(x)], real_true))).to('cuda')
+            weights = weights.reshape(-1, 1)
+        else:
+            weights = torch.tensor(list(map(lambda x : weight[int(x)], y_true))).to('cuda')
         return (weights * ((y_true - y_pred) ** 2)).mean()
 
 class MeanAbsoluteError(nn.Module):
