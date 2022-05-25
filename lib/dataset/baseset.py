@@ -229,7 +229,7 @@ class BaseSet(Dataset):
         # crop_method = extended_transforms.RandomCropInRate(nsize=self.input_size,
         #                                                    rand_rate=(self.cfg.TRAIN.SAMPLER.MULTI_CROP.L_REGION,
         #                                                               self.cfg.TRAIN.SAMPLER.MULTI_CROP.S_REGION))
-        crop_method = transforms.Resize((224,224))
+        crop_method = transforms.Resize((448,448))
         img = crop_method(img)
 
         rand_h_flip = transforms.RandomHorizontalFlip()
@@ -241,7 +241,7 @@ class BaseSet(Dataset):
             # Color distortion
             color_distort = transforms.ColorJitter(brightness=32. / 255., saturation=0.5)
             img = color_distort(img)
-        img.save("/opt/ml/images/" +str(img) + '.jpg')
+        # img.save("/opt/ml/images/" +str(img) + '.jpg')
         # img.show()
         return img
 
@@ -258,7 +258,7 @@ class BaseSet(Dataset):
             # elif part == 3:
             #     img = transforms.RandomCrop((500,500), padding=True, pad_if_needed=True, fill=0, padding_mode='constant')(img)
 
-            img = transforms.Resize((224,224))(img)
+            img = transforms.Resize((448,448))(img)
         else:
             idx = index % self.val_sample_repeat_num
             if self.cfg.TRAIN.SAMPLER.MULTI_CROP.ENABLE and idx < self.cfg.TRAIN.SAMPLER.MULTI_CROP.CROP_NUM:   # multi crop
@@ -267,7 +267,7 @@ class BaseSet(Dataset):
                 if self.cfg.TRAIN.SAMPLER.MULTI_CROP.ENABLE:
                     idx -= self.cfg.TRAIN.SAMPLER.MULTI_CROP.CROP_NUM
                 img = self._val_multi_scale(img, idx)
-        img.save("/opt/ml/valimages/" +str(img) + '.jpg')
+        # img.save("/opt/ml/valimages/" +str(img) + '.jpg')
         return img
 
     def _val_multi_crop(self, img, idx):
