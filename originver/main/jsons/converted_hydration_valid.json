@@ -1,0 +1,695 @@
+{
+    "annotations": [
+        {
+            "image_id": 0,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00315NBC_val.jpg"
+        },
+        {
+            "image_id": 1,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00045NBC_val.jpg"
+        },
+        {
+            "image_id": 2,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00095NBC_val.jpg"
+        },
+        {
+            "image_id": 3,
+            "category_id": 4,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00512NBC_val.jpg"
+        },
+        {
+            "image_id": 4,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00034NBC_val.jpg"
+        },
+        {
+            "image_id": 5,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00434NBC_val.jpg"
+        },
+        {
+            "image_id": 6,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00155NBC_val.jpg"
+        },
+        {
+            "image_id": 7,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00304NBC_val.jpg"
+        },
+        {
+            "image_id": 8,
+            "category_id": 4,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00164NBC_val.jpg"
+        },
+        {
+            "image_id": 9,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00295NBC_val.jpg"
+        },
+        {
+            "image_id": 10,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00365NBC_val.jpg"
+        },
+        {
+            "image_id": 11,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00225NBC_val.jpg"
+        },
+        {
+            "image_id": 12,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00214NBC_val.jpg"
+        },
+        {
+            "image_id": 13,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00265NBC_val.jpg"
+        },
+        {
+            "image_id": 14,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00394NBC_val.jpg"
+        },
+        {
+            "image_id": 15,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00405NBC_val.jpg"
+        },
+        {
+            "image_id": 16,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00305NBC_val.jpg"
+        },
+        {
+            "image_id": 17,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00114NBC_val.jpg"
+        },
+        {
+            "image_id": 18,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00572NBC_val.jpg"
+        },
+        {
+            "image_id": 19,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00135NBC_val.jpg"
+        },
+        {
+            "image_id": 20,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00014NBC_val.jpg"
+        },
+        {
+            "image_id": 21,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00542NBC_val.jpg"
+        },
+        {
+            "image_id": 22,
+            "category_id": 4,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00175NBC_val.jpg"
+        },
+        {
+            "image_id": 23,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00074NBC_val.jpg"
+        },
+        {
+            "image_id": 24,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00084NBC_val.jpg"
+        },
+        {
+            "image_id": 25,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00025NBC_val.jpg"
+        },
+        {
+            "image_id": 26,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00094NBC_val.jpg"
+        },
+        {
+            "image_id": 27,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00005NBC_val.jpg"
+        },
+        {
+            "image_id": 28,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00054NBC_val.jpg"
+        },
+        {
+            "image_id": 29,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00205NBC_val.jpg"
+        },
+        {
+            "image_id": 30,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00562NBC_val.jpg"
+        },
+        {
+            "image_id": 31,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00024NBC_val.jpg"
+        },
+        {
+            "image_id": 32,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00195NBC_val.jpg"
+        },
+        {
+            "image_id": 33,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00384NBC_val.jpg"
+        },
+        {
+            "image_id": 34,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00473NBC_val.jpg"
+        },
+        {
+            "image_id": 35,
+            "category_id": 4,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00502NBC_val.jpg"
+        },
+        {
+            "image_id": 36,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00531NBC_val.jpg"
+        },
+        {
+            "image_id": 37,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00345NBC_val.jpg"
+        },
+        {
+            "image_id": 38,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00185NBC_val.jpg"
+        },
+        {
+            "image_id": 39,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00314NBC_val.jpg"
+        },
+        {
+            "image_id": 40,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00481NBC_val.jpg"
+        },
+        {
+            "image_id": 41,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00334NBC_val.jpg"
+        },
+        {
+            "image_id": 42,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00264NBC_val.jpg"
+        },
+        {
+            "image_id": 43,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00105NBC_val.jpg"
+        },
+        {
+            "image_id": 44,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00491NBC_val.jpg"
+        },
+        {
+            "image_id": 45,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00194NBC_val.jpg"
+        },
+        {
+            "image_id": 46,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00124NBC_val.jpg"
+        },
+        {
+            "image_id": 47,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00561NBC_val.jpg"
+        },
+        {
+            "image_id": 48,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00134NBC_val.jpg"
+        },
+        {
+            "image_id": 49,
+            "category_id": 4,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00541NBC_val.jpg"
+        },
+        {
+            "image_id": 50,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00532NBC_val.jpg"
+        },
+        {
+            "image_id": 51,
+            "category_id": 4,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00174NBC_val.jpg"
+        },
+        {
+            "image_id": 52,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00414NBC_val.jpg"
+        },
+        {
+            "image_id": 53,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00482NBC_val.jpg"
+        },
+        {
+            "image_id": 54,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00004NBC_val.jpg"
+        },
+        {
+            "image_id": 55,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00275NBC_val.jpg"
+        },
+        {
+            "image_id": 56,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00065NBC_val.jpg"
+        },
+        {
+            "image_id": 57,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00204NBC_val.jpg"
+        },
+        {
+            "image_id": 58,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00184NBC_val.jpg"
+        },
+        {
+            "image_id": 59,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00245NBC_val.jpg"
+        },
+        {
+            "image_id": 60,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00244NBC_val.jpg"
+        },
+        {
+            "image_id": 61,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00552NBC_val.jpg"
+        },
+        {
+            "image_id": 62,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00235NBC_val.jpg"
+        },
+        {
+            "image_id": 63,
+            "category_id": 4,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00501NBC_val.jpg"
+        },
+        {
+            "image_id": 64,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00104NBC_val.jpg"
+        },
+        {
+            "image_id": 65,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00415NBC_val.jpg"
+        },
+        {
+            "image_id": 66,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00395NBC_val.jpg"
+        },
+        {
+            "image_id": 67,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00215NBC_val.jpg"
+        },
+        {
+            "image_id": 68,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00335NBC_val.jpg"
+        },
+        {
+            "image_id": 69,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00521NBC_val.jpg"
+        },
+        {
+            "image_id": 70,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00285NBC_val.jpg"
+        },
+        {
+            "image_id": 71,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00075NBC_val.jpg"
+        },
+        {
+            "image_id": 72,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00464NBC_val.jpg"
+        },
+        {
+            "image_id": 73,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00064NBC_val.jpg"
+        },
+        {
+            "image_id": 74,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00224NBC_val.jpg"
+        },
+        {
+            "image_id": 75,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00144NBC_val.jpg"
+        },
+        {
+            "image_id": 76,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00234NBC_val.jpg"
+        },
+        {
+            "image_id": 77,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00424NBC_val.jpg"
+        },
+        {
+            "image_id": 78,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00274NBC_val.jpg"
+        },
+        {
+            "image_id": 79,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00385NBC_val.jpg"
+        },
+        {
+            "image_id": 80,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00425NBC_val.jpg"
+        },
+        {
+            "image_id": 81,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00522NBC_val.jpg"
+        },
+        {
+            "image_id": 82,
+            "category_id": 4,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00551NBC_val.jpg"
+        },
+        {
+            "image_id": 83,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00444NBC_val.jpg"
+        },
+        {
+            "image_id": 84,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00355NBC_val.jpg"
+        },
+        {
+            "image_id": 85,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00344NBC_val.jpg"
+        },
+        {
+            "image_id": 86,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00375NBC_val.jpg"
+        },
+        {
+            "image_id": 87,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00492NBC_val.jpg"
+        },
+        {
+            "image_id": 88,
+            "category_id": 4,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00165NBC_val.jpg"
+        },
+        {
+            "image_id": 89,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00115NBC_val.jpg"
+        },
+        {
+            "image_id": 90,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00035NBC_val.jpg"
+        },
+        {
+            "image_id": 91,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00284NBC_val.jpg"
+        },
+        {
+            "image_id": 92,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00044NBC_val.jpg"
+        },
+        {
+            "image_id": 93,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00455NBC_val.jpg"
+        },
+        {
+            "image_id": 94,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00445NBC_val.jpg"
+        },
+        {
+            "image_id": 95,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00571NBC_val.jpg"
+        },
+        {
+            "image_id": 96,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00255NBC_val.jpg"
+        },
+        {
+            "image_id": 97,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00324NBC_val.jpg"
+        },
+        {
+            "image_id": 98,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00055NBC_val.jpg"
+        },
+        {
+            "image_id": 99,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00085NBC_val.jpg"
+        },
+        {
+            "image_id": 100,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00404NBC_val.jpg"
+        },
+        {
+            "image_id": 101,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00325NBC_val.jpg"
+        },
+        {
+            "image_id": 102,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00254NBC_val.jpg"
+        },
+        {
+            "image_id": 103,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00294NBC_val.jpg"
+        },
+        {
+            "image_id": 104,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00374NBC_val.jpg"
+        },
+        {
+            "image_id": 105,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00354NBC_val.jpg"
+        },
+        {
+            "image_id": 106,
+            "category_id": 3,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00435NBC_val.jpg"
+        },
+        {
+            "image_id": 107,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00364NBC_val.jpg"
+        },
+        {
+            "image_id": 108,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00154NBC_val.jpg"
+        },
+        {
+            "image_id": 109,
+            "category_id": 4,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00511NBC_val.jpg"
+        },
+        {
+            "image_id": 110,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00145NBC_val.jpg"
+        },
+        {
+            "image_id": 111,
+            "category_id": 1,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00465NBC_val.jpg"
+        },
+        {
+            "image_id": 112,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00015NBC_val.jpg"
+        },
+        {
+            "image_id": 113,
+            "category_id": 2,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00454NBC_val.jpg"
+        },
+        {
+            "image_id": 114,
+            "category_id": 0,
+            "part": 3,
+            "img_path": "/opt/ml/data/naverboostcamp_val/JPEGImages/00125NBC_val.jpg"
+        }
+    ],
+    "num_classes": 5
+}
