@@ -3,9 +3,9 @@ __pycache__
 *.csv
 *.zip
 *.jpg
-*.json
 *.DS_Store
 *.pyc
-data
 /output
+data
 /code/wandb
+wrinkle/main/jsons/*.json
