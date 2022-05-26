@@ -34,12 +34,17 @@ def policy_rand(probability=0.5, magnitude=5):
          and replaced by subsequent random crop operation)
     """
     policy = {
-        0: [[('Saturation', probability, magnitude)], [('Contrast', probability, magnitude)], [('Brightness', probability, magnitude)],
+        0: [[('Saturation', probability, magnitude)], 
+        [('Contrast', probability, magnitude)], 
+        [('Brightness', probability, magnitude)],
             [('Sharpness', probability, magnitude)],
-            [('Posterize', probability, magnitude)], [('AutoContrast', probability, magnitude)],
-            [('Solarize', probability, magnitude)], [('Equalize', probability, magnitude)],
+            [('Posterize', probability, magnitude)], 
+            [('AutoContrast', probability, magnitude)],
+            [('Solarize', probability, magnitude)], 
+            [('Equalize', probability, magnitude)],
             [('Rotate', probability, magnitude)],
-            [('Shear_x', probability, magnitude)], [('Shear_y', probability, magnitude)]]
+            [('Shear_x', probability, magnitude)], 
+            [('Shear_y', probability, magnitude)]]
     }
     return policy
 
@@ -95,7 +100,8 @@ def policy_v1_1(probability=0.7, magnitude=5):
         and then randomly select one transformation from {shape} transformations."""
     policy = {
         # color augment
-        0: [[('Mixup', probability, magnitude)], 
+        0: [
+            # [('Mixup', probability, magnitude)], 
         [('Vignetting', probability, magnitude)],
          [('Gaussian_noise', probability, magnitude)],
             [('Saturation', probability, magnitude)],
@@ -110,14 +116,16 @@ def policy_v1_1(probability=0.7, magnitude=5):
             # [('Solarize', probability, magnitude)],
              [('Equalize', probability, magnitude)]],
         # shape augment
-        1: [[('Rotate', probability, magnitude)],
-         [('Lens_distortion', probability, magnitude)],
-            [('Flip', probability, magnitude)],
-             [('Cutout', probability, magnitude)],
-            [('Shear_x', probability, magnitude)],
-             [('Shear_y', probability, magnitude)],
-            [('Scale', probability, magnitude)], 
-            [('Scale_xy_diff', probability, magnitude)]]
+        # 1: [
+            # [('Rotate', probability, magnitude)],
+        #  [('Lens_distortion', probability, magnitude)],
+            # [('Flip', probability, magnitude)],
+            #  [('Cutout', probability, magnitude)],
+            # [('Shear_x', probability, magnitude)],
+            #  [('Shear_y', probability, magnitude)],
+            # [('Scale', probability, magnitude)], 
+            # [('Scale_xy_diff', probability, magnitude)]
+            # ]
     }
     return policy
 

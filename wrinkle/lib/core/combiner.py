@@ -1,5 +1,4 @@
 import torch
-import numpy as np
 from .evaluate import accuracy
 
 
@@ -40,16 +39,6 @@ class Combiner:
         return eval("self.{}".format(self.type))(
             image, label, meta, **kwargs
         )
-    
-    def prediction2label(self, pred: np.ndarray):
-        """Convert ordinal predictions to class labels, e.g.
-        
-        [0.9, 0.1, 0.1, 0.1] -> 0
-        [0.9, 0.9, 0.1, 0.1] -> 1
-        [0.9, 0.9, 0.9, 0.1] -> 2
-        etc.
-        """
-        return (pred > 0.5).cumprod(axis=1).sum(axis=1) - 1
 
     def default(self, image, label, meta, **kwargs):
         image, label = image.to(self.device), label.to(self.device)
@@ -58,13 +47,11 @@ class Combiner:
             loss = self.loss_func(output, label)
         else:
             loss = torch.zeros(1)       # for isic_2019 valid and test, ignore "loss"
-        # now_pred = self.func(output)
-        # now_result = torch.argmax(output, 1)
-        now_result = self.prediction2label(output)
-
+        now_pred = self.func(output)
+        now_result = torch.argmax(now_pred, 1)
         now_acc, _ = accuracy(now_result.cpu().numpy(), label.cpu().numpy())
 
-        return loss, now_acc, output
+        return loss, now_acc, now_pred
 
     # BBN method, please see the paper: "BBN: Bilateral-Branch Network with
     # Cumulative Learning for Long-Tailed Visual Recognition"

@@ -54,8 +54,7 @@ def valid_model(
     if cfg.DATASET.VALID_ADD_ONE_CLASS:
         num_classes = val_loader.dataset.get_num_classes() - 1
 
-    # all_preds = np.zeros([val_loader.dataset.get_num_images(), num_classes])
-    all_preds = []
+    all_preds = np.zeros([val_loader.dataset.get_num_images(), num_classes])
     all_labels = np.zeros(val_loader.dataset.get_num_images())
     ii = 0
     with torch.no_grad():
@@ -66,9 +65,7 @@ def valid_model(
             now_pred = now_pred.cpu().numpy()
             new_pred, new_label = get_val_result(now_pred, label.cpu().numpy(), cfg, num_classes)
 
-            preds = prediction2label(new_pred)
-            # all_preds[ii:ii + new_pred.shape[0], :] = new_pred
-            all_preds += (preds.tolist())
+            all_preds[ii:ii + new_pred.shape[0], :] = new_pred
             all_labels[ii:ii + new_pred.shape[0]] = new_label
             ii += new_pred.shape[0]
             all_loss.update(loss.data.item(), cnt)
@@ -77,24 +74,21 @@ def valid_model(
         all_max = 1.0 - np.amax(all_preds, axis=1)
         all_preds = np.c_[all_preds, all_max]
 
-    # all_result = np.argmax(all_preds, 1)
-    all_result = np.array(all_preds)
+    all_result = np.argmax(all_preds, 1)
     fusion_matrix.update(all_result, all_labels)
-    # roc_auc = get_roc_auc(all_preds, all_labels)
+    roc_auc = get_roc_auc(all_preds, all_labels)
 
     metrics = {}
     metrics["loss"] = all_loss.avg
     metrics["sensitivity"] = fusion_matrix.get_rec_per_class()
     metrics["specificity"] = fusion_matrix.get_pre_per_class()
     metrics["f1_score"] = fusion_matrix.get_f1_score()
-    # metrics["roc_auc"] = roc_auc
+    metrics["roc_auc"] = roc_auc
     metrics["fusion_matrix"] = fusion_matrix.matrix
     if cfg.DATASET.DATASET == "isic_2017":
-        # auc_mean = (metrics["roc_auc"][0] + metrics["roc_auc"][1]) / 2.0
-        pass
+        auc_mean = (metrics["roc_auc"][0] + metrics["roc_auc"][1]) / 2.0
     else:
-        # auc_mean = np.mean(metrics["roc_auc"])
-        pass
+        auc_mean = np.mean(metrics["roc_auc"])
     metrics["acc"] = fusion_matrix.get_accuracy()
     metrics["bacc"] = fusion_matrix.get_balance_accuracy()
     spec_mean = np.mean(metrics["specificity"])
@@ -103,10 +97,9 @@ def valid_model(
         epoch, metrics["loss"], metrics["acc"] * 100)
     )
     logger.info("         roc_auc.mean: {:>6.3f}  f1_score: {:>6.4f}  Balance_Acc: {:>6.3f}%   ".format(
-        #auc_mean, 
-        0,metrics["f1_score"], metrics["bacc"] * 100)
+        auc_mean, metrics["f1_score"], metrics["bacc"] * 100)
     )
-    # logger.info("         roc_auc:       {}  ".format(metrics["roc_auc"]))
+    logger.info("         roc_auc:       {}  ".format(metrics["roc_auc"]))
     logger.info("         sensitivity:   {}  ".format(metrics["sensitivity"]))
     logger.info("         specificity:   {}   mean:   {}  ".format(metrics["specificity"], spec_mean))
     logger.info("         fusion_matrix: \n{}  ".format(metrics["fusion_matrix"]))
@@ -173,10 +166,6 @@ def get_test_result(pred, cfg, num_classes):
 
 def get_roc_auc(all_preds, all_labels):
     one_hot = label_to_one_hot(all_labels, all_preds.shape[1])
-    modified_label = np.zeros_like(x)
-    for i, label in enumerate(all_labeles):
-        label = int(t.item())
-        modified_label[i,0:target+1] = 1
 
     fpr = {}
     tpr = {}
@@ -194,12 +183,3 @@ def label_to_one_hot(label, num_class):
 
     return one_hot
 
-def prediction2label(pred: np.ndarray):
-    """Convert ordinal predictions to class labels, e.g.
-    
-    [0.9, 0.1, 0.1, 0.1] -> 0
-    [0.9, 0.9, 0.1, 0.1] -> 1
-    [0.9, 0.9, 0.9, 0.1] -> 2
-    etc.
-    """
-    return (pred > 0.5).cumprod(axis=1).sum(axis=1) - 1

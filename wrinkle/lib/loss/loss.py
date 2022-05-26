@@ -354,19 +354,15 @@ class MWNLoss(BaseLoss):
                 "For MWNLoss, the value of beta must be between 0.0 and 0.0 .")
 
     def forward(self, x, target):
-        modified_target = torch.zeros_like(x)
-        for i, t in enumerate(target):
-            target = int(t.item())
-            modified_target[i,0:target+1] = 1
-        
+        labels_one_hot = F.one_hot(target, self.no_of_class).float().to(self.device)
         weights = self.weight
         weights = weights.unsqueeze(0)
-        weights = weights.repeat(modified_target.shape[0], 1) * modified_target
+        weights = weights.repeat(labels_one_hot.shape[0], 1) * labels_one_hot
         weights = weights.sum(1)
         weights = weights.unsqueeze(1)
         weights = weights.repeat(1, self.no_of_class)
 
-        loss = F.binary_cross_entropy_with_logits(input=x, target=modified_target, reduction="none")
+        loss = F.binary_cross_entropy_with_logits(input=x, target=labels_one_hot, reduction="none")
 
         if self.beta > 0.0:
             th = - math.log(self.beta)
@@ -383,7 +379,7 @@ class MWNLoss(BaseLoss):
         if self.gamma == 0.0:
             modulator = 1.0
         else:
-            modulator = torch.exp(-self.gamma * modified_target * x
+            modulator = torch.exp(-self.gamma * labels_one_hot * x
                                   - self.gamma * torch.log(1 + torch.exp(-1.0 * x)))
 
         loss = modulator * loss
