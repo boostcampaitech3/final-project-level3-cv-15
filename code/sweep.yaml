@@ -8,17 +8,23 @@ metric:
   
 parameters:
   dir:
-    values: ["oil"]
+    values: ["sensitive"]
   arg_n:
     values: ["arg"]
-  seed:
-    values: [42, 24,5]
+  # p:
+  #   min: 0
+  #   max: 1
+  # limit:
+  #   min: 0
+  #   max: 100
+  # seed:
+  #   values: [42, 24,5]
   lr:
     min: 0.00001
     max: 0.01
-  optimizer:
-    values: ["adam", "sgd", "adamw"]
-  scheduler:
-    values: ["lambdalr", "cosineannealinglr", "cosineannealingwarmrestart","exponentiallr","steplr"]
-  loss:
-    values: ["cross_entropy", "focal", "label_smoothing", "f1"]
+  # optimizer:
+  #   values: ["adam", "sgd", "adamw"]
+  # scheduler:
+  #   values: ["lambdalr", "cosineannealinglr", "cosineannealingwarmrestart","exponentiallr","steplr"]
+  # loss:
+  #   values: ["cross_entropy", "focal", "label_smoothing", "f1"]

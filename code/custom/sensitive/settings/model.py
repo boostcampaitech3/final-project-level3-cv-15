@@ -37,7 +37,7 @@ class EfficientNet_b4(nn.Module):
     
 def getModel(modeltype, device, model_n):
     if modeltype == 'timm':
-        model=Timm(model_n)
+        model=Timm(model_n = model_n)
     elif modeltype == 'efficientb4':
         model=EfficientNet_b4()
     

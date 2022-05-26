@@ -4,7 +4,7 @@ def getArg():
     arg = eDict()
     
     # settings
-    arg.epoch = 35
+    arg.epoch = 45
     arg.seed = 42
     
     # dataloader
@@ -31,7 +31,7 @@ def getArg():
 
     #
     arg.output_path = "../output"
-    arg.custom_name = "Son_oil_no-aug"
+    arg.custom_name = "Son_oil_512_parsing_sampler_aug"
     arg.log_steps=20
 
     # accuracy, loss, f1_score, recall_score, precision_score
@@ -40,5 +40,9 @@ def getArg():
     arg.wandb = True
     arg.wandb_project = "XAI project"
     arg.wandb_entity = "boostcampaitech3"
+
+    #========
+    arg.p = 1.0
+    arg.limit = 4
 
     return arg

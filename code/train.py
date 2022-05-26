@@ -10,9 +10,11 @@ from tqdm import tqdm
 from utils.set_seed import setSeed
 
 from sklearn.metrics import f1_score, recall_score, precision_score, confusion_matrix
-import pandas as pd
 
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 import wandb
 import warnings
 
@@ -23,7 +25,7 @@ def getArgument():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dir',type=str ,required=True)
     parser.add_argument('--arg_n',type=str ,required=True)
-    parser.add_argument('--lr',type=str ,required=False)	
+    parser.add_argument('--lr',type=float ,required=False)	
     parser.add_argument('--optimizer',type=str ,required=False)	
     parser.add_argument('--loss',type=str ,required=False)	
     parser.add_argument('--scheduler',type=str ,required=False)	
@@ -31,6 +33,8 @@ def getArgument():
     parser.add_argument('--seed',type=str ,required=False)	
     parser.add_argument('--modeltype',type=str ,required=False)	
     parser.add_argument('--modelname',type=str ,required=False)
+    # parser.add_argument('--p',type=float ,required=False)
+    # parser.add_argument('--limit',type=float ,required=False)
     
     return parser.parse_known_args()[0].dir, \
     parser.parse_known_args()[0].arg_n, \
@@ -41,7 +45,9 @@ def getArgument():
     parser.parse_known_args()[0].seed,\
     parser.parse_known_args()[0].batch,\
     parser.parse_known_args()[0].modeltype,\
-    parser.parse_known_args()[0].modelname,
+    parser.parse_known_args()[0].modelname
+    # parser.parse_known_args()[0].p,\
+    # parser.parse_known_args()[0].limit
 
 def train(args, model, train_loader, device,  criterion, optimizer):
     
@@ -175,7 +181,11 @@ def main(custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _
     if _modeltype:	
         arg.modeltype = _modeltype	
     if _modelname:	
-        arg.modelname = _modelname	
+        arg.modelname = _modelname
+    # if _p:	
+    #     arg.p = _p
+    # if _limit:	
+    #     arg.limit = _limit	
     # custom_dir, arg_n, _lr, _optimizer, _loss, _scheduler, _seed, _batch, _modeltype,_modelname	
     print(arg)
 

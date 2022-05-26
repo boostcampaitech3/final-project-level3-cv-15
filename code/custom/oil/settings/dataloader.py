@@ -5,6 +5,7 @@ from PIL import Image
 import cv2
 import albumentations as A
 import numpy as np
+from torchsampler import ImbalancedDatasetSampler
 
 class OiltrainDataset(Dataset):
 
@@ -25,8 +26,8 @@ class OiltrainDataset(Dataset):
         part_labels = data['part']
         # image = Image.open(img_path)
         image = cv2.imread(img_path)
-        image = A.Resize(always_apply=False, p=1.0, height=500, width=700, interpolation=0)(image = image)
-        image = image["image"]
+        # image = A.Resize(always_apply=False, p=1.0, height=512, width=512, interpolation=0)(image = image)
+        # image = image["image"]
         # if int(part_labels) == 1:
         #     image = cv2.rectangle(image, (0,0), (700,120), (0,0,0),-1)
         #     image = cv2.rectangle(image, (0,400), (700,500), (0,0,0),-1)
@@ -36,12 +37,17 @@ class OiltrainDataset(Dataset):
         #     image = cv2.fillPoly(image,[polly2],color=(0,0,0))
 
         if self.transform:
-            image = self.transform(image)
+            image = self.transform(image=image)["image"]
+            image = image.float()
             
         return image, oil_labels
     
     def __len__(self):
         return len(self.df)
+    
+    def get_labels(self):
+        data=self.df
+        return data['oil']
 
 class OilvalDataset(Dataset):
     num_classes = 5
@@ -62,8 +68,8 @@ class OilvalDataset(Dataset):
         part_labels = data['part']
 
         image = cv2.imread(img_path)
-        image = A.Resize(always_apply=False, p=1.0, height=500, width=700, interpolation=0)(image = image)
-        image = image["image"]
+        # image = A.Resize(always_apply=False, p=1.0, height=512, width=512, interpolation=0)(image = image)
+        # image = image["image"]
         # if int(part_labels) == 1:
         #     image = cv2.rectangle(image, (0,0), (700,120), (0,0,0),-1)
         #     image = cv2.rectangle(image, (0,400), (700,500), (0,0,0),-1)
@@ -74,7 +80,8 @@ class OilvalDataset(Dataset):
 
         
         if self.transform:
-            image = self.transform(image)
+            image = self.transform(image=image)["image"]
+            image = image.float()
             
         
             
@@ -101,9 +108,11 @@ def getDataloader(train_transform, val_transform, batch, train_worker, valid_wor
     val_dataset= OilvalDataset(valid_data, val_transform)
     
     train_loader = DataLoader(train_dataset,
-                              shuffle=True,
+                            #   shuffle=True,
                               num_workers = train_worker,
-                              batch_size = batch,)
+                              batch_size = batch,
+                              sampler=ImbalancedDatasetSampler(train_dataset)
+                              )
     valid_loader = DataLoader(val_dataset,
                               shuffle=False,
                               num_workers = valid_worker,

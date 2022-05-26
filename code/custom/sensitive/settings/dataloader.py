@@ -2,6 +2,10 @@ from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import pandas as pd
 from PIL import Image
+import cv2
+import albumentations as A
+import numpy as np
+from torchsampler import ImbalancedDatasetSampler
 
 class SensitivetrainDataset(Dataset):
     num_classes = 5
@@ -17,10 +21,12 @@ class SensitivetrainDataset(Dataset):
         data=self.df.iloc[idx]
         
         img_path = "/opt/ml/data/naverboostcamp_train/JPEGImages/"+ data['file_name']
-        image = Image.open(img_path)
+        # image = Image.open(img_path)
+        image = cv2.imread(img_path)
         
         if self.transform:
-            image = self.transform(image)
+            image = self.transform(image=image)["image"]
+            image = image.float()
             
         sensitive_labels = data['sensitive']
         part_labels = data['part']
@@ -29,6 +35,10 @@ class SensitivetrainDataset(Dataset):
     
     def __len__(self):
         return len(self.df)
+    
+    def get_labels(self):
+        data=self.df
+        return data['sensitive']
 
 class SensitivevalDataset(Dataset):
     num_classes = 5
@@ -44,10 +54,12 @@ class SensitivevalDataset(Dataset):
         data=self.df.iloc[idx]
         
         img_path = "/opt/ml/data/naverboostcamp_val/JPEGImages/"+ data['file_name']
-        image = Image.open(img_path)
+        # image = Image.open(img_path)
+        image = cv2.imread(img_path)
         
         if self.transform:
-            image = self.transform(image)
+            image = self.transform(image=image)["image"]
+            image = image.float()
             
         sensitive_labels = data['sensitive']
         part_labels = data['part']
@@ -74,9 +86,11 @@ def getDataloader(train_transform, val_transform, batch, train_worker, valid_wor
     val_dataset= SensitivevalDataset(valid_data, val_transform)
     
     train_loader = DataLoader(train_dataset,
-                              shuffle=True,
+                              # shuffle=True,
                               num_workers = train_worker,
-                              batch_size = batch,)
+                              batch_size = batch,
+                              sampler=ImbalancedDatasetSampler(train_dataset)
+                             )
     valid_loader = DataLoader(val_dataset,
                               shuffle=False,
                               num_workers = valid_worker,
