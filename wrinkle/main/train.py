@@ -11,6 +11,7 @@ from lib.utils.utils import (
 from lib.core.function import train_model, valid_model
 from lib.core.combiner import Combiner
 
+import torchvision
 import numpy as np
 import torch
 import os, shutil
@@ -23,8 +24,25 @@ import torch.backends.cudnn as cudnn
 import ast
 import csv
 import random
-
+import torch
+import torch.nn as nn
 import wandb
+
+class EfficientNet_b4(nn.Module):
+    def __init__(self, class_n=5) -> None:
+        super().__init__()
+        self.fc = nn.Linear(1792, class_n, bias=True)
+        torch.nn.init.kaiming_normal_(self.fc.weight)
+        torch.nn.init.zeros_(self.fc.bias)
+
+        self.effnetb4 = torchvision.models.efficientnet_b4(pretrained=True)
+        self.effnetb4.classifier = nn.Sequential(
+            nn.Dropout(p=0.4, inplace=True),
+            self.fc
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.effnetb4(x)
 
 def setSeed(seed):
 	torch.manual_seed(seed)
@@ -102,6 +120,8 @@ if __name__ == "__main__":
     max_epoch = cfg.TRAIN.MAX_EPOCH
     loss_fuc = eval(cfg.LOSS.LOSS_TYPE)(para_dict=para_dict)
     model = get_model(cfg, num_classes, device, logger)
+    # model=EfficientNet_b4()
+    # model.to(device)
     combiner = Combiner(cfg, device, model, loss_fuc)
     optimizer = get_optimizer(cfg, model)
     scheduler = get_scheduler(cfg, optimizer)
@@ -246,17 +266,17 @@ if __name__ == "__main__":
                 )
             )
 
-        model_save_path = os.path.join(model_dir, "epoch_{}.pth".format(epoch))
-        if epoch % cfg.SAVE_STEP == 0:
-            torch.save({
-                'state_dict': model.state_dict(),
-                'epoch': epoch,
-                'best_result': best_result,
-                'best_epoch': best_epoch,
-                'best_metrics': best_metrics,
-                'scheduler': scheduler.state_dict(),
-                'optimizer': optimizer.state_dict()
-            }, model_save_path)
+        # model_save_path = os.path.join(model_dir, "epoch_{}.pth".format(epoch))
+        # if epoch % cfg.SAVE_STEP == 0:
+            # torch.save({
+            #     'state_dict': model.state_dict(),
+            #     'epoch': epoch,
+            #     'best_result': best_result,
+            #     'best_epoch': best_epoch,
+            #     'best_metrics': best_metrics,
+            #     'scheduler': scheduler.state_dict(),
+            #     'optimizer': optimizer.state_dict()
+            # }, model_save_path)
 
         
     #     if cfg.TRAIN.TENSORBOARD.ENABLE:

@@ -1,4 +1,4 @@
-NAME: 'wrinkle_crop0_balance_1.8_lossW_re_weight3'
+NAME: 'wrinkle_crop0_balance_1.8_lossW_re_weight3-re'
 OUTPUT_DIR: './output/wrinkle'
 SHOW_STEP: 500
 SAVE_STEP: 2

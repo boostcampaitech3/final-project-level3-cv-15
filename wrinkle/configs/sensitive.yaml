@@ -39,8 +39,8 @@ LOSS:
   LOSS_TYPE: 'MWNLoss'
   SCHEDULER: 'cls'
   DRW_EPOCH: 50
-  CLS_EPOCH_MIN: 60
-  CLS_EPOCH_MAX: 70
+  CLS_EPOCH_MIN: 20
+  CLS_EPOCH_MAX: 60
   FOCAL:
     TYPE: 'sigmoid'
     SIGMOID: 'enlarge'
