@@ -11,8 +11,11 @@ def getArg():
     arg.batch = 16
     arg.train_worker = 4
     arg.valid_worker = 4
+    arg.weight = [1, 1, 1, 1, 1]
     
     # model
+    arg.regression = False
+    arg.ordinalclassification = True
     arg.modeltype = 'timm'
     arg.modelname = 'efficientnet_b4'
     # timm : efficientnet_b4, vit_base_patch16_224
@@ -26,18 +29,26 @@ def getArg():
     arg.scheduler ='steplr'
     arg.step = 20
     
-    # loss
-    arg.loss = 'cross_entropy'
+    #transform
+    arg.resize = 380
 
-    #
+    # loss
+    # pick 'mse' if regression mode
+
+    arg.loss = 'ordinal'
+
     arg.output_path = "../output"
-    arg.custom_name = "oil"
+
+    arg.custom_name = "oil_L2_classification"
+    arg.loss_weight = [1, 1, 1, 1, 1]
+
+
     arg.log_steps=20
 
-    # accuracy, loss, f1_score, recall_score, precision_score
-    arg.metric = "f1_score" 
+    # accuracy, loss, f1_score, recall_score, precision_score, balanced_accuracy
+    arg.metric = "accuracy" 
 
-    arg.wandb = True
+    arg.wandb = False
     arg.wandb_project = "XAI project"
     arg.wandb_entity = "boostcampaitech3"
 

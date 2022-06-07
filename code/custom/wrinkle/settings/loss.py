@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
+from sklearn.metrics import mean_squared_error
 
 # https://discuss.pytorch.org/t/is-this-a-correct-implementation-for-focal-loss-in-pytorch/43327/8
 class FocalLoss(nn.Module):
@@ -52,6 +53,7 @@ class F1Loss(nn.Module):
         assert y_true.ndim == 1
         y_true = F.one_hot(y_true, self.classes).to(torch.float32)
         y_pred = F.softmax(y_pred, dim=1)
+        print(y_true)
 
         tp = (y_true * y_pred).sum(dim=0).to(torch.float32)
         tn = ((1 - y_true) * (1 - y_pred)).sum(dim=0).to(torch.float32)
@@ -65,11 +67,54 @@ class F1Loss(nn.Module):
         f1 = f1.clamp(min=self.epsilon, max=1 - self.epsilon)
         return 1 - f1.mean()
 
+
+class ordinal(nn.Module):
+    def __init__(self):
+        super().__init__()
+    
+    def forward(self, predictions, targets, weight):
+        """Ordinal regression with encoding as in https://arxiv.org/pdf/0704.1028.pdf"""
+
+        # Create out modified target with [batch_size, num_labels] shape
+        modified_target = torch.zeros_like(predictions)
+
+        # Fill in ordinal target function, i.e. 0 -> [1,0,0,...]
+        for i, target in enumerate(targets):
+            target = int(target.item())
+            modified_target[i, 0:target+1] = 1
+
+        targets = targets.detach().cpu().numpy().tolist()
+        return MeanSquaredError()(predictions, modified_target, weight, targets)
+
+
+class MeanSquaredError(nn.Module):
+    def __init__(self):
+        super().__init__()
+    def forward(self, y_pred, y_true, weight, real_true = None):
+        if real_true:
+            weights = torch.tensor(list(map(lambda x : weight[int(x)], real_true))).to('cuda')
+            weights = weights.reshape(-1, 1)
+        else:
+            weights = torch.tensor(list(map(lambda x : weight[int(x)], y_true))).to('cuda')
+        return (weights * ((y_true - y_pred) ** 2)).mean()
+
+class MeanAbsoluteError(nn.Module):
+    def __init__(self):
+        super().__init__()
+    def forward(self, y_pred, y_true, weight):
+        weights = torch.tensor(list(map(lambda x : weight[int(x)], y_true))).to('cuda')
+        return (weights * (torch.abs(y_true - y_pred))).mean() 
+
+
 _criterion_entrypoints = {
     'cross_entropy': nn.CrossEntropyLoss,
     'focal': FocalLoss,
     'label_smoothing': LabelSmoothingLoss,
-    'f1': F1Loss
+    'f1': F1Loss,
+    'smoothL1' :nn.SmoothL1Loss,
+    'ordinal' : ordinal,
+    'mse' : MeanSquaredError,
+    'mae' : MeanAbsoluteError
 }
 
 
@@ -87,3 +132,13 @@ def getLoss(criterion_name, **kwargs):
     else:
         raise RuntimeError('Unknown loss (%s)' % criterion_name)
     return criterion
+
+def prediction2label(pred: np.ndarray):
+    """Convert ordinal predictions to class labels, e.g.
+    
+    [0.9, 0.1, 0.1, 0.1] -> 0
+    [0.9, 0.9, 0.1, 0.1] -> 1
+    [0.9, 0.9, 0.9, 0.1] -> 2
+    etc.
+    """
+    return (pred > 0.5).cumprod(axis=1).sum(axis=1) - 1

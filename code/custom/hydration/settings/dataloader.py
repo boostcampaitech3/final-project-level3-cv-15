@@ -2,6 +2,7 @@ from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import pandas as pd
 from PIL import Image
+import random
 
 class HydrationtrainDataset(Dataset):
     num_classes = 5
@@ -57,7 +58,7 @@ class HydrationvalDataset(Dataset):
     def __len__(self):
         return len(self.df)
 
-def getDataloader(train_transform, val_transform, batch, train_worker, valid_worker):
+def getDataloader(train_transform, val_transform, batch, train_worker, valid_worker, weight):
     train_data = pd.read_csv('/opt/ml/data/naverboostcamp_train.csv')
     valid_data = pd.read_csv('/opt/ml/data/naverboostcamp_val.csv')
 
@@ -65,10 +66,25 @@ def getDataloader(train_transform, val_transform, batch, train_worker, valid_wor
     valid_data = valid_data[['part', 'hydration', 'file_name']]
 
     train_data = train_data[train_data['hydration'] >= 0]
-    valid_data = valid_data[valid_data['hydration'] >=0]
+    valid_data = valid_data[valid_data['hydration'] >= 0]
 
     train_data.reset_index(drop=True, inplace=True)
     valid_data.reset_index(drop=True, inplace=True)
+
+    for score, w in enumerate(weight):
+        score_index = train_data[train_data.hydration == score].index.tolist()
+        if w < 1 : 
+            drop_index = random.sample(score_index, int(len(score_index)*(1-w)))
+            train_data = train_data.drop(drop_index, axis=0)
+            train_data.reset_index(inplace=True, drop=True)
+
+        elif w > 1 :
+            Int, Dec = int(w), w - int(w)
+            add_index = random.sample(score_index, int(len(score_index)*Dec))
+            train_data = pd.concat([train_data, train_data.iloc[score_index * (Int-1) + add_index]])
+            train_data.reset_index(inplace=True, drop=True)
+
+    print(train_data.groupby(['hydration']).count()['part'])
     
     train_dataset= HydrationtrainDataset(train_data, train_transform)
     val_dataset= HydrationvalDataset(valid_data, val_transform)
