@@ -1,0 +1,13 @@
+*.ipynb_checkpoints
+
+
+__pycache__
+*.csv
+*.zip
+*.jpg
+*.DS_Store
+*.pyc
+/output
+data
+/code/wandb
+wrinkle/main/jsons/*.json
