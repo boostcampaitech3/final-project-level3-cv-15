@@ -38,8 +38,10 @@ def getArg():
     arg.loss = 'ordinal'
 
     arg.output_path = "../output"
+
     arg.custom_name = "oil_L2_classification"
     arg.loss_weight = [1, 1, 1, 1, 1]
+
 
     arg.log_steps=20
 

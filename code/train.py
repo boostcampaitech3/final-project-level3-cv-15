@@ -9,6 +9,7 @@ from tqdm import tqdm
 # from utils.train_method import train
 from utils.set_seed import setSeed
 
+
 from sklearn.metrics import f1_score, recall_score, precision_score, confusion_matrix, balanced_accuracy_score
 
 from pytorch_grad_cam import GradCAM
@@ -19,6 +20,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+
 import wandb
 import warnings
 
@@ -100,7 +102,9 @@ def train(args, model, train_loader, device,  criterion, optimizer):
 def valid(args, model, valid_loader, device,  criterion, optimizer):
     model.eval()
     
+
     all_preds, all_labels, all_regs = [], [], []
+
     corrects=0
     count = 0
     losses, bacc_items, f1_items, recall_items, precision_items = [], [], [], [], []
@@ -114,6 +118,7 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
             labels = labels.to(device)
             
             outputs= model(images)
+
             if len(outputs) == 1:
                 all_regs.append(outputs.squeeze().tolist())
             else:
@@ -166,7 +171,8 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
                                     'recall' : sum(recall_items)/len(recall_items),
                                     'precision' : sum(precision_items)/len(precision_items)
                                     })
-    
+      
+
     acc = corrects / count
     bacc = balanced_accuracy_score(all_labels, all_preds)
 
@@ -230,13 +236,13 @@ def valid(args, model, valid_loader, device,  criterion, optimizer):
                     'valid/F1_score' : f1,
                     'valid/recall' : recall,
                     'valid/precision' : precision,
-                    'valid/bacc' : bacc,
                     "Confusion_Matrix" : wandb.Image(g),
                     "GradCAM" : wandb.Image(fig1)
                     })
 
     return {"accuracy": acc,
             "balanced_accuracy" : bacc,
+
             "loss" : loss, 
             "f1_score" : f1,
             "recall_score" : recall, 
@@ -269,6 +275,7 @@ def main(custom_dir, arg_n):
 
     # change outputPath if outputPath already exists 
     unique = 1	
+
     if os.path.exists(outputPath):
         while os.path.exists(outputPath + str(unique)):
             unique += 1
