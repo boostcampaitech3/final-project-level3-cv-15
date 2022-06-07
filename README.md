@@ -1,7 +1,5 @@
 # Overview
 
----
-
 - 피부기록 앱 스킨로그와 화장품 추천 앱 매니폴드를 서비스하는 아트랩의 기업 과제 수행
 - 제공받은 피부 데이터를 바탕으로 피부 평가, 분석 및 XAI
 - 사용자에게 피부에 대한 정보를 제공하고, 화장품 선택에 도움주는 것이 목적
@@ -10,8 +8,6 @@
 - **Output** : 유분, 민감도, 주름, 색소침착 네 가지 기준에 대한 0~4점의 라벨링
 
 ## 평가방법
-
----
 
 - ***Macro-recall***
     - data Imbalance 문제를 해결하기 위해 F1 score와 macro Recall 고려
@@ -25,8 +21,6 @@
         
 
 # **Archive contents**
-
----
 
 ```python
 .
@@ -68,17 +62,13 @@
 
 # Dataset
 
----
-
 - 피부 부위별 사진을 유분, 민감도, 주름, 색소침착 네 가지 기준에 대해 0~4점으로 라벨링
 
-![image](https://user-images.githubusercontent.com/57162812/172381415-09dafb45-155a-4140-ad45-63819a4d6969.png)
+<div align="center"><img src="https://user-images.githubusercontent.com/57162812/172381415-09dafb45-155a-4140-ad45-63819a4d6969.png" width="80%"></div>
 
-![image](https://user-images.githubusercontent.com/57162812/172381453-785a2c92-6a11-4e9c-89c2-9e3f44a17558.png)
+<div align="center"><img src="https://user-images.githubusercontent.com/57162812/172381453-785a2c92-6a11-4e9c-89c2-9e3f44a17558.png" width="80%"></div>
 
 # Experiment
-
----
 
 - ***CLAHE***
     
@@ -86,19 +76,23 @@
     
 - ***Loss Weight***
 
-![image](https://user-images.githubusercontent.com/57162812/172381555-d926232b-8382-4124-93e1-b5a37ff805fa.png)
+    <img src="https://user-images.githubusercontent.com/57162812/172381555-d926232b-8382-4124-93e1-b5a37ff805fa.png" width="40%">
 
 - ***Ordinal Classification***
+    
+    |  | encoder |
+    | --- | --- | 
+    | 0점 | [1, 0, 0, 0, 0] | 
+    | 1점 | [1, 1, 0, 0, 0] |
+    | 2점 | [1, 1, 1, 0, 0] |
+    | 3점 | [1, 1, 1, 1, 0] |
+    | 4점 | [1, 1, 1, 1, 1] |
 
-![image](https://user-images.githubusercontent.com/57162812/172381585-c24a3514-b7d7-4ae8-aec3-09e037c6e8aa.png)
+    각각의 클래스를 원핫인코딩 하는 대신, 각 클래스를 ordinal하게 인코딩하여 클래스에 순서를 부여
 
-각각의 클래스를 원핫인코딩 하는 대신, 각 클래스를 ordinal하게 인코딩하여 클래스에 순서를 부여
-
-![image](https://user-images.githubusercontent.com/57162812/172381619-2947b60c-94b8-4cf1-81c9-48355d4cbafa.png)
+    ![image](https://user-images.githubusercontent.com/57162812/172381619-2947b60c-94b8-4cf1-81c9-48355d4cbafa.png)
 
 # Results
-
----
 
 |  | macro recall | f1 |
 | --- | --- | --- |
@@ -109,23 +103,7 @@
 
 # XAI
 
----
-
-- ***Oil***
-    
-    <img src="https://user-images.githubusercontent.com/57162812/172381695-2e8c3e5b-6d60-45ad-b07a-4a2795112d3c.png" width="30%">
-    
-- ***Pigmentation***
-    
-    <img src="https://user-images.githubusercontent.com/57162812/172381717-ad7dddca-d4c6-47f2-b520-ad2fac581250.png" width="30%">
-    
-- ***Sensitive***
-    
-    <img src="https://user-images.githubusercontent.com/57162812/172381745-f6cf8466-8fcf-4dc3-ad70-4d0298717a8c.png" width="30%">
-    
-- ***Wrinkle***
-    
-    <img src="https://user-images.githubusercontent.com/57162812/172381765-4fdc0b3f-b5dc-4c47-b47f-0b90c5c4a352.png" width="30%">
+<div align="center"><img width="662" alt="image" src="https://user-images.githubusercontent.com/57162812/172384428-6f33593b-6c74-462a-825e-3775e6f69b13.png"></div>
     
 
 # Requirements
