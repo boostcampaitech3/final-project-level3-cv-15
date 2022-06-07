@@ -2,27 +2,54 @@ from easydict import EasyDict as eDict
 
 def getArg():
     arg = eDict()
-
-    arg.batch = 16
+    
+    # settings
     arg.epoch = 20
-    arg.lr = 1e-3
     arg.seed = 42
-    arg.save_capacity = 5
-
-    arg.image_root = "../input/data"
-    arg.train_json = "train_all.json"
-    arg.val_json = "valid_0.json"
-    arg.test_json = "test.json"
-    arg.output_path = "../output"
-
+    
+    # dataloader
+    arg.batch = 16
     arg.train_worker = 4
     arg.valid_worker = 4
-    arg.test_worker = 4
+    arg.weight = [1, 1, 1, 1, 1]
+    
+    # model
+    arg.regression = False
+    arg.ordinalclassification = True
+    arg.modeltype = 'timm'
+    arg.modelname = 'efficientnet_b4'
+    # timm : efficientnet_b4, vit_base_patch16_224
+
+    
+    # optimizer 
+    arg.lr = 1e-3
+    arg.optimizer = 'adam'
+    
+    # scheduler
+    arg.scheduler ='steplr'
+    arg.step = 20
+    
+    #transform
+    arg.resize = 380
+
+    # loss
+    # pick 'mse' if regression mode
+
+    arg.loss = 'ordinal'
+
+    arg.output_path = "../output"
+
+    arg.custom_name = "oil_L2_classification"
+    arg.loss_weight = [1, 1, 1, 1, 1]
+
+
+    arg.log_steps=20
+
+    # accuracy, loss, f1_score, recall_score, precision_score, balanced_accuracy
+    arg.metric = "accuracy" 
 
     arg.wandb = False
-    arg.wandb_project = "segmentation"
-    arg.wandb_entity = "cv4"
-
-    arg.custom_name = "resnest269e_panet_all"
+    arg.wandb_project = "XAI project"
+    arg.wandb_entity = "boostcampaitech3"
 
     return arg
