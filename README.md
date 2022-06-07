@@ -108,7 +108,6 @@
 
 # Requirements
 
----
 
 ```jsx
 pip install -r requirements.txt
@@ -116,7 +115,6 @@ pip install -r requirements.txt
 
 # Train.py
 
----
 
 ```python
 # MWML
